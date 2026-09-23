@@ -20,8 +20,14 @@ running to load lessons — it degrades to an everything-locked/warning-banner
 state, not a crash, if either isn't up.
 `docs/CONTENT_AUTHORING_TEMPLATE.md` / `docs/templates/supernova_content_template.xlsx`
 is the spreadsheet schema for authoring lesson task content outside a
-conversation (e.g. a hired content writer) — it mirrors `content_items`/
-`content_translations` so importing a filled sheet is mechanical. If asked
-to import a filled copy of it, write the importer described in that doc's
-last section rather than hand-converting rows.
+conversation (e.g. a hired content writer). Every one of the 840 real quest
+slots (all 50 weeks) is already a row with its blueprint columns pre-filled
+and locked, specifically so a submission can't invent a different day-by-day
+structure — that happened once (see the doc's "why v1 needed a v2"). If
+handed a filled copy, run `python3 scripts/templates/validate_tasks_xlsx.py
+<file>` FIRST — it re-derives the truth from days.json/skills.json rather
+than trusting the sheet, and is the real enforcement (cell locking isn't,
+against anything script-generated) — then write the importer described in
+the doc's "turning a filled sheet into the database" section rather than
+hand-converting rows.
 
