@@ -1,11 +1,17 @@
 import cors from 'cors';
 import express from 'express';
+import path from 'path';
 
 import { getDaysForWeek, getWeek } from './curriculum';
 import { getAvailableDays, getDayLesson } from './lessons';
 
 const app = express();
 app.use(cors());
+
+// Pre-generated TTS audio (see docs/TTS_AUDIO.md / scripts/tts/) — static
+// files, not a live TTS call. Missing files 404 and the client falls back
+// to on-device speech synthesis (src/lib/audio/ttsAudio.ts).
+app.use('/audio', express.static(path.join(__dirname, 'public', 'audio')));
 
 const PORT = Number(process.env.PORT ?? 4000);
 

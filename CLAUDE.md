@@ -6,8 +6,9 @@
 @docs/CURRICULUM_DATA.md
 @docs/CONTENT_DATABASE.md
 @docs/CONTENT_AUTHORING_TEMPLATE.md
+@docs/TTS_AUDIO.md
 
-Read all four docs above before designing curriculum content, data models,
+Read all five docs above before designing curriculum content, data models,
 or learner-facing flows. `docs/CURRICULUM_PHILOSOPHY.md` is the product/
 curriculum brief and is treated as a standing instruction, not just
 background reading — in particular its "source of truth" rule at the
@@ -30,4 +31,10 @@ than trusting the sheet, and is the real enforcement (cell locking isn't,
 against anything script-generated) — then write the importer described in
 the doc's "turning a filled sheet into the database" section rather than
 hand-converting rows.
+`docs/TTS_AUDIO.md` covers lesson read-aloud audio: batch-generated once per
+`(language, text)` with self-hosted Kokoro TTS (`scripts/tts/`), served as
+static files, not a live TTS call per request — the curriculum is fixed
+content, so there's no per-user/per-request cost to design around. Falls
+back to on-device `expo-speech` (`src/lib/audio/nativeSpeech.ts`) for any
+line that hasn't been batch-generated yet.
 

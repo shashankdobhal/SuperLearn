@@ -20,10 +20,7 @@ export function IntroCard({
       <Text style={styles.emoji}>{step.emoji}</Text>
       {step.audioTextEn ? <PlayAudioButton text={step.audioTextEn} /> : null}
       <Text style={styles.text}>{language === 'hi' ? step.textHi : step.textEn}</Text>
-      <PlayAudioButton
-        text={language === 'hi' ? step.textHi : step.textEn}
-        language={language === 'hi' ? 'hi-IN' : 'en-US'}
-      />
+      <PlayAudioButton text={language === 'hi' ? step.textHi : step.textEn} language={language} />
       <PrimaryButton label="NEXT!" onPress={onNext} style={styles.button} />
     </View>
   );
