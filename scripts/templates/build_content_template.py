@@ -122,7 +122,7 @@ examples = [
          prompt_en="Say your name.", prompt_hi="अपना नाम बोलिए।",
          pattern="My name is + [Name]", example="My name is Aisha.", is_final="N"),
     dict(week=1, day=1, quest_index=3, quest_type_ref="speaking", task_type="speak", skill_id="introduce_self",
-         prompt_en="Last one — put it all together. Give a full introduction: your name, where you're from, what you do, and one interest.",
+         prompt_en="Last one — put it all together. Give a full introduction: your name, where you’re from, what you do, and one interest.",
          prompt_hi="आखिरी सवाल — सब कुछ मिलाकर बोलिए: आपका नाम, आप कहाँ से हैं, आप क्या करते हैं, और आपकी एक रुचि।",
          is_final="Y"),
     dict(week=1, day=3, quest_index=2, quest_type_ref="listening", task_type="intro", skill_id="introduce_self",
@@ -292,7 +292,9 @@ for name, applies, required, desc in reference:
         cell.alignment = Alignment(wrap_text=True, vertical="top")
         cell.font = BODY_FONT
         cell.border = BORDER
-    ws2.cell(row=r, column=1).border = BORDER
+    name_cell = ws2.cell(row=r, column=1)
+    name_cell.alignment = Alignment(wrap_text=True, vertical="top")
+    name_cell.border = BORDER
     ws2.row_dimensions[r].height = 34
     r += 1
 
