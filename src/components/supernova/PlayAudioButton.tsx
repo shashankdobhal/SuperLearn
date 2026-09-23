@@ -4,12 +4,14 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { Colors, Radii, Space } from '@/constants/palette';
 
-/** Speaks `text` aloud in English via on-device TTS. Shared by any card that
- * needs a listening-comprehension "PLAY" affordance (see SpeakCard, and the
- * intro/mcq/build cards' optional `audioTextEn` field). */
-export function PlayAudioButton({ text }: { text: string }) {
+/** Speaks `text` aloud via on-device/browser TTS (`language` picks the voice
+ * — 'en-US' by default, pass 'hi-IN' for Hindi text). Shared by any card
+ * that needs a "read aloud" affordance: the listening-comprehension
+ * `audioTextEn` field (see SpeakCard, and the intro/mcq/build cards), and
+ * more generally the visible instructional text on intro/rule/mcq cards. */
+export function PlayAudioButton({ text, language = 'en-US' }: { text: string; language?: string }) {
   return (
-    <Pressable onPress={() => Speech.speak(text, { language: 'en-US' })} style={styles.button}>
+    <Pressable onPress={() => Speech.speak(text, { language })} style={styles.button}>
       <Ionicons name="volume-high" size={16} color={Colors.primary} />
       <Text style={styles.text}>PLAY</Text>
     </Pressable>

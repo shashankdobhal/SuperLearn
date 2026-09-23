@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
+import { PlayAudioButton } from '@/components/supernova/PlayAudioButton';
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
 import { Colors, Radii, Space } from '@/constants/palette';
 import type { RuleStep } from '@/lib/curriculum/lesson-types';
@@ -12,6 +13,7 @@ export function RuleCard({ step, onNext }: { step: RuleStep; onNext: () => void 
         <Text style={styles.pattern}>{step.pattern}</Text>
       </View>
       <Text style={styles.example}>{step.example}</Text>
+      <PlayAudioButton text={step.example} />
       <PrimaryButton label="NEXT!" onPress={onNext} style={styles.button} />
     </View>
   );
