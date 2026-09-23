@@ -1,6 +1,6 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { BuildCard } from '@/components/supernova/lesson/BuildCard';
 import { IntroCard } from '@/components/supernova/lesson/IntroCard';
@@ -12,8 +12,9 @@ import { LanguageToggle, type SupportLanguage } from '@/components/supernova/Lan
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
 import { ProgressHeader } from '@/components/supernova/ProgressHeader';
 import { Colors, Radii, Space } from '@/constants/palette';
-import { getDayLesson } from '@/content/lessons';
+import { fetchDayLesson } from '@/lib/api/lessons';
 import { getSkill } from '@/lib/curriculum/data';
+import type { DayLesson } from '@/lib/curriculum/lesson-types';
 
 type Phase = 'learn' | 'transition' | 'speak' | 'complete';
 
@@ -27,7 +28,11 @@ export default function LessonScreen() {
   const params = useLocalSearchParams<{ week?: string; day?: string }>();
   const week = Number(params.week ?? 1) || 1;
   const day = Number(params.day ?? 1) || 1;
-  const dayLesson = getDayLesson(week, day);
+
+  // undefined = still loading, null = server said this day isn't authored,
+  // DayLesson = loaded. See src/lib/api/lessons.ts / server/lessons.ts.
+  const [dayLesson, setDayLesson] = useState<DayLesson | null | undefined>(undefined);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const skill = dayLesson ? getSkill(dayLesson.skillId) : undefined;
   const dailyOutcome = dayLesson?.dailyOutcome ?? '';
 
@@ -45,6 +50,24 @@ export default function LessonScreen() {
   useEffect(() => {
     startedAt.current = Date.now();
   }, []);
+
+  useEffect(() => {
+    // Params changing while this screen stays mounted isn't a flow the app
+    // currently has (Home always navigates here fresh) — so this doesn't
+    // reset to a loading state first, only reports the (week, day) it was
+    // asked to load.
+    let cancelled = false;
+    fetchDayLesson(week, day)
+      .then((lesson) => {
+        if (!cancelled) setDayLesson(lesson);
+      })
+      .catch((err) => {
+        if (!cancelled) setLoadError(err instanceof Error ? err.message : 'Failed to load lesson');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [week, day]);
 
   function recordResult({ correct, wordsUsed: w, mistake }: GradedResult) {
     setTotalGraded((t) => t + 1);
@@ -65,14 +88,42 @@ export default function LessonScreen() {
     [totalGraded, correctCount, wordsUsed, mistakes, skill, dailyOutcome, elapsedSeconds],
   );
 
-  if (!dayLesson) {
+  if (loadError) {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyTitle}>Couldn&apos;t reach the lesson server</Text>
+          <Text style={styles.emptyBody}>
+            {loadError}
+            {'\n\n'}
+            Is the local API running? Start it with{' '}
+            <Text style={styles.emptyCode}>npm run server</Text> (needs Postgres running too — see
+            docs/CONTENT_DATABASE.md).
+          </Text>
+          <PrimaryButton label="BACK" onPress={() => router.back()} style={styles.emptyButton} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (dayLesson === undefined) {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.emptyState}>
+          <ActivityIndicator color={Colors.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (dayLesson === null) {
     return (
       <SafeAreaView style={styles.safe}>
         <View style={styles.emptyState}>
           <Text style={styles.emptyTitle}>This lesson isn&apos;t authored yet</Text>
           <Text style={styles.emptyBody}>
             Week {week} / Day {day} exists in the curriculum data, but its task content hasn&apos;t been
-            written yet — only Week 1 / Day 1 is built so far.
+            written yet. Check Home for which days are unlocked.
           </Text>
           <PrimaryButton label="BACK" onPress={() => router.back()} style={styles.emptyButton} />
         </View>
@@ -252,6 +303,10 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
+  },
+  emptyCode: {
+    fontFamily: 'monospace',
+    color: Colors.primary,
   },
   emptyButton: {
     alignSelf: 'stretch',

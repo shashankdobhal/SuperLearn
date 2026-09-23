@@ -12,7 +12,9 @@ curriculum brief and is treated as a standing instruction, not just
 background reading — in particular its "source of truth" rule at the
 bottom: don't silently redesign the Everyday Confidence → Beginner
 curriculum; label any change as a proposed improvement.
-`docs/CONTENT_DATABASE.md` covers the Postgres/Supabase schema and
-translation pipeline in `scripts/db/` — note that the running app doesn't
-read from this DB yet (still reads static JSON/TS), so don't assume it does.
+`docs/CONTENT_DATABASE.md` covers the Postgres/Supabase schema, the
+`server/` API the app fetches lesson content from, and the translation
+pipeline in `scripts/db/`. The app needs `npm run server` (and Postgres)
+running to load lessons — it degrades to an everything-locked/warning-banner
+state, not a crash, if either isn't up.
 

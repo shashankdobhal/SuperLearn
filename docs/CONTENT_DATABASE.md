@@ -6,11 +6,14 @@ rationale this implements.
 
 ## Current state (as of this writing)
 
-**The running app still reads static files** (`content/curriculum/**/*.json`
-and `src/content/lessons/**/*.ts`) — nothing below is wired into the Expo app
-yet. This is the database + pipeline *foundation*, validated against a local
-Postgres, not yet a live backend the app talks to. See "What's not done yet"
-below for the remaining steps.
+**The running app reads lesson content from Postgres, via a small local API
+server** (`server/`, `npm run server`) — see "The app ↔ API ↔ Postgres wiring"
+below. `content/curriculum/**/*.json` (weeks/days/skills — the curriculum
+*blueprint*) is still static, by design (see "why a database, and why this
+split"). `src/content/lessons/**/*.ts` still exists too, but only as the
+human-authored *input* to `npm run db:migrate` now — the app no longer
+imports those files directly. See "What's not done yet" below for what's
+still missing (a real hosted Supabase project, chief among them).
 
 ## Why a database, and why this split
 
@@ -101,6 +104,41 @@ safe to run without touching anything real. Point `DATABASE_URL` at a
 Supabase project's connection string to run the same scripts against it —
 the schema is plain Postgres, no Supabase-specific step needed.
 
+## The app ↔ API ↔ Postgres wiring
+
+React Native (web or native) can't open a raw Postgres connection — it has
+no TCP sockets, and even if it did, shipping DB credentials to a client is
+its own problem. So there's a small Express server (`server/`, same
+`DATABASE_URL` default as the scripts above) in between:
+
+```
+Expo app  --fetch-->  server/ (Express, npm run server, :4000)  --pg-->  Postgres
+```
+
+- **`GET /api/lessons/:week/:day`** — `server/lessons.ts` queries
+  `content_items` + `content_translations` for that day and reassembles the
+  exact `DayLesson`/`LearnFlowStep`/`SpeakStep` shape
+  (`src/lib/curriculum/lesson-types.ts`) the lesson screen already renders,
+  merging in `weekly_outcome`/`daily_mini_outcome` from `days.json` (still
+  static, per above). 404s if that day has no `content_items` yet — the
+  inverse of `scripts/db/lib/toRows.ts`'s DayLesson → rows mapping.
+- **`GET /api/lessons/available?week=1`** — which days in that week have
+  content, for the Home screen's lock/unlock state.
+- `src/lib/api/{client,lessons}.ts` on the app side; `src/app/(tabs)/index.tsx`
+  and `src/app/lesson.tsx` fetch instead of importing static content, with
+  loading and "can't reach the server" states (the app degrades to
+  everything-locked + a warning banner rather than crashing if `npm run
+  server` or Postgres isn't running).
+- Still returns **both `hi` and `en` text** per item (not a single resolved
+  locale) — the in-lesson Hindi/English toggle keeps working exactly as
+  before. Serving Tamil/Telugu/etc. to the app is a separate, later step
+  (needs a support-language picker in the UI, not just data in the DB) —
+  see "what's not done yet".
+- **Native (iOS/Android) caveat**: `localhost:4000` only resolves on web /
+  the same machine. A device or Android emulator needs the host machine's
+  LAN IP (or `10.0.2.2` for the Android emulator) via `EXPO_PUBLIC_API_URL` —
+  not needed for the current "test on web" phase.
+
 ## Machine translation quality, for a language-learning app specifically
 
 Raw MT output for a hint like "आप कहाँ से हैं, यह बताने का सही तरीका चुनें"
@@ -118,12 +156,13 @@ process to set up, not a bug fix.
    create a project at supabase.com, then either run
    `DATABASE_URL=<its connection string> npm run db:migrate` yourself, or
    hand me the connection string (as an env var, not pasted in chat) and
-   I'll run it.
-2. **The Expo app doesn't read from this DB.** `src/lib/curriculum/data.ts`
-   still imports the JSON files directly. Wiring the app to fetch
-   content_items/content_translations (with a support-language picker
-   driving which `locale` to query) is the natural next step once a real
-   Supabase project exists to point at.
+   I'll run it. Until then, everything (app, API server, scripts) points at
+   the local Postgres these were validated against.
+2. **No support-language picker in the UI.** The API always returns `hi`+`en`
+   per item (matching today's in-lesson toggle); serving Tamil/Telugu/etc. to
+   the app needs a real "choose your support language" setting somewhere
+   (Account tab, once it exists) driving a `?locale=` on `GET
+   /api/lessons/:week/:day`, not just the translated rows existing in the DB.
 3. **`weeks`/`days` (the curriculum blueprint) stay as JSON.** They're
    structural (which quests exist, in what order) rather than per-learner
    content, so there's less urgency — but the Home screen's

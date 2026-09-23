@@ -1,10 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
 import { Colors, Radii, Space } from '@/constants/palette';
-import { hasDayLesson } from '@/content/lessons';
+import { fetchAvailableDays } from '@/lib/api/lessons';
 import { getDaysForWeek, getWeek } from '@/lib/curriculum/data';
 import { questTypeIcon } from '@/lib/curriculum/questIcons';
 import type { DayRecord, QuestType } from '@/lib/curriculum/types';
@@ -16,6 +17,28 @@ export default function HomeScreen() {
   const daysInWeek = getDaysForWeek(CURRENT_WEEK);
   const today = daysInWeek[0];
 
+  // null = still loading (every day renders locked until this resolves, to
+  // avoid a flash of "unlocked" before we actually know).
+  const [availableDays, setAvailableDays] = useState<number[] | null>(null);
+  const [serverUnreachable, setServerUnreachable] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchAvailableDays(CURRENT_WEEK)
+      .then((days) => {
+        if (!cancelled) setAvailableDays(days);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setAvailableDays([]);
+          setServerUnreachable(true);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -24,18 +47,27 @@ export default function HomeScreen() {
           <Text style={styles.wordmarkSubtitle}>Everyday Confidence · Beginner</Text>
         </View>
 
+        {serverUnreachable && (
+          <View style={styles.warningBanner}>
+            <Ionicons name="warning" size={16} color={Colors.warning} />
+            <Text style={styles.warningText}>
+              Can&apos;t reach the lesson server — run `npm run server` (and Postgres) to unlock lessons.
+            </Text>
+          </View>
+        )}
+
         <View style={styles.weekCard}>
           <Text style={styles.sectionLabel}>SECTION 1 · WEEK {week.week}</Text>
           <Text style={styles.weekArc}>{week.week_arc}</Text>
           <Text style={styles.weeklyOutcome}>{week.weekly_outcome}</Text>
         </View>
 
-        <TodayCard day={today} />
+        <TodayCard day={today} ready={availableDays?.includes(today.day) ?? false} />
 
         <Text style={styles.pathHeader}>This week</Text>
         <View style={styles.path}>
           {daysInWeek.map((d) => (
-            <DayRow key={d.day} day={d} />
+            <DayRow key={d.day} day={d} ready={availableDays?.includes(d.day) ?? false} />
           ))}
         </View>
       </ScrollView>
@@ -43,15 +75,13 @@ export default function HomeScreen() {
   );
 }
 
-function TodayCard({ day }: { day: DayRecord }) {
+function TodayCard({ day, ready }: { day: DayRecord; ready: boolean }) {
   const quests = [
     [day.quest_1, day.quest_1_type],
     [day.quest_2, day.quest_2_type],
     [day.quest_3, day.quest_3_type],
     [day.quest_4, day.quest_4_type],
   ].filter(([title]) => !!title) as [string, QuestType][];
-
-  const ready = hasDayLesson(day.week, day.day);
 
   return (
     <View style={styles.todayCard}>
@@ -80,8 +110,7 @@ function TodayCard({ day }: { day: DayRecord }) {
   );
 }
 
-function DayRow({ day }: { day: DayRecord }) {
-  const ready = hasDayLesson(day.week, day.day);
+function DayRow({ day, ready }: { day: DayRecord; ready: boolean }) {
   return (
     <Pressable
       disabled={!ready}
@@ -126,6 +155,19 @@ const styles = StyleSheet.create({
   wordmarkSubtitle: {
     color: Colors.textSecondary,
     marginTop: 2,
+  },
+  warningBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Space.sm,
+    backgroundColor: Colors.warningMuted,
+    borderRadius: Radii.md,
+    padding: Space.md,
+  },
+  warningText: {
+    color: Colors.warning,
+    fontSize: 12,
+    flex: 1,
   },
   weekCard: {
     backgroundColor: Colors.bgCard,
