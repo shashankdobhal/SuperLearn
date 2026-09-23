@@ -43,10 +43,10 @@ migration — it's idempotent.
   prerequisite graph / mastery engine.
 - The `content_items` layer (§23 of the philosophy doc) — the actual tasks/
   sentences inside each quest, as opposed to `days.json`'s quest *shape*
-  (titles + types) — now exists for Week 1 / Days 1–2 as hand-authored
+  (titles + types) — now exists for Weeks 1–4 / Days 1–28 as hand-authored
   `src/content/lessons/**` files, migrated into Postgres and served to the
   app through `server/`'s API (`docs/CONTENT_DATABASE.md` /
-  `supabase/migrations/` / `scripts/db/`). Still only 2 of 350 days, and no
+  `supabase/migrations/` / `scripts/db/`). Still only 28 of 350 days, and no
   hosted Supabase project exists yet (local Postgres only) — see
   `docs/CONTENT_DATABASE.md`'s "what's not done yet" for the rest.
 - Only one of the eventual 21 tracks (7 personas × 3 levels) exists.

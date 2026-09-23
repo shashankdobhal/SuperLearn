@@ -81,6 +81,7 @@ export default function LessonScreen() {
     return () => clearInterval(id);
   }, [loadError]);
 
+
   function recordResult({ correct, wordsUsed: w, mistake }: GradedResult) {
     setTotalGraded((t) => t + 1);
     if (correct) setCorrectCount((c) => c + 1);
@@ -150,6 +151,13 @@ export default function LessonScreen() {
 
   const { learnFlow, speakFlow } = dayLesson;
 
+  // Some days (quest_count=1, a pure "Talk with Nova" day — see
+  // week-03-day-05.ts) have no learnFlow at all. `phase` still starts at
+  // 'learn', so render as if we were already in 'speak' for those days
+  // rather than a non-existent learn step — no state transition needed
+  // since advanceLearn() is never reachable when learnFlow is empty anyway.
+  const effectivePhase: Phase = phase === 'learn' && learnFlow.length === 0 ? 'speak' : phase;
+
   function closeLesson() {
     router.back();
   }
@@ -177,24 +185,24 @@ export default function LessonScreen() {
     <SafeAreaView style={styles.safe}>
       <Stack.Screen options={{ headerShown: false }} />
 
-      {phase === 'learn' && (
+      {effectivePhase === 'learn' && (
         <ProgressHeader progress={learnIndex / learnFlow.length} icon="book" onClose={closeLesson} />
       )}
-      {phase === 'speak' && (
+      {effectivePhase === 'speak' && (
         <ProgressHeader progress={speakIndex / speakFlow.length} icon="chatbubbles" onClose={closeLesson} />
       )}
-      {phase === 'transition' && <ProgressHeader progress={1} icon="book" onClose={closeLesson} />}
+      {effectivePhase === 'transition' && <ProgressHeader progress={1} icon="book" onClose={closeLesson} />}
 
-      {(phase === 'learn' || phase === 'transition') && (
+      {(effectivePhase === 'learn' || effectivePhase === 'transition') && (
         <View style={styles.langToggleWrap}>
           <LanguageToggle value={language} onChange={setLanguage} />
         </View>
       )}
 
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        {phase === 'learn' && renderLearnStep()}
-        {phase === 'transition' && renderTransition()}
-        {phase === 'speak' && (
+        {effectivePhase === 'learn' && renderLearnStep()}
+        {effectivePhase === 'transition' && renderTransition()}
+        {effectivePhase === 'speak' && (
           <SpeakCard
             key={speakFlow[speakIndex].id}
             step={speakFlow[speakIndex]}

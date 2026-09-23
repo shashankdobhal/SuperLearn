@@ -21,11 +21,37 @@ import { week01Day04 } from '../../src/content/lessons/everyday-confidence-begin
 import { week01Day05 } from '../../src/content/lessons/everyday-confidence-beginner/week-01-day-05';
 import { week01Day06 } from '../../src/content/lessons/everyday-confidence-beginner/week-01-day-06';
 import { week01Day07 } from '../../src/content/lessons/everyday-confidence-beginner/week-01-day-07';
+import { week02Day01 } from '../../src/content/lessons/everyday-confidence-beginner/week-02-day-01';
+import { week02Day02 } from '../../src/content/lessons/everyday-confidence-beginner/week-02-day-02';
+import { week02Day03 } from '../../src/content/lessons/everyday-confidence-beginner/week-02-day-03';
+import { week02Day04 } from '../../src/content/lessons/everyday-confidence-beginner/week-02-day-04';
+import { week02Day05 } from '../../src/content/lessons/everyday-confidence-beginner/week-02-day-05';
+import { week02Day06 } from '../../src/content/lessons/everyday-confidence-beginner/week-02-day-06';
+import { week02Day07 } from '../../src/content/lessons/everyday-confidence-beginner/week-02-day-07';
+import { week03Day01 } from '../../src/content/lessons/everyday-confidence-beginner/week-03-day-01';
+import { week03Day02 } from '../../src/content/lessons/everyday-confidence-beginner/week-03-day-02';
+import { week03Day03 } from '../../src/content/lessons/everyday-confidence-beginner/week-03-day-03';
+import { week03Day04 } from '../../src/content/lessons/everyday-confidence-beginner/week-03-day-04';
+import { week03Day05 } from '../../src/content/lessons/everyday-confidence-beginner/week-03-day-05';
+import { week03Day06 } from '../../src/content/lessons/everyday-confidence-beginner/week-03-day-06';
+import { week03Day07 } from '../../src/content/lessons/everyday-confidence-beginner/week-03-day-07';
+import { week04Day01 } from '../../src/content/lessons/everyday-confidence-beginner/week-04-day-01';
+import { week04Day02 } from '../../src/content/lessons/everyday-confidence-beginner/week-04-day-02';
+import { week04Day03 } from '../../src/content/lessons/everyday-confidence-beginner/week-04-day-03';
+import { week04Day04 } from '../../src/content/lessons/everyday-confidence-beginner/week-04-day-04';
+import { week04Day05 } from '../../src/content/lessons/everyday-confidence-beginner/week-04-day-05';
+import { week04Day06 } from '../../src/content/lessons/everyday-confidence-beginner/week-04-day-06';
+import { week04Day07 } from '../../src/content/lessons/everyday-confidence-beginner/week-04-day-07';
 import { lessonToRows } from './lib/toRows';
 
 const DATABASE_URL = process.env.DATABASE_URL ?? 'postgres://localhost/supernova_dev';
 
-const LESSONS = [week01Day01, week01Day02, week01Day03, week01Day04, week01Day05, week01Day06, week01Day07];
+const LESSONS = [
+  week01Day01, week01Day02, week01Day03, week01Day04, week01Day05, week01Day06, week01Day07,
+  week02Day01, week02Day02, week02Day03, week02Day04, week02Day05, week02Day06, week02Day07,
+  week03Day01, week03Day02, week03Day03, week03Day04, week03Day05, week03Day06, week03Day07,
+  week04Day01, week04Day02, week04Day03, week04Day04, week04Day05, week04Day06, week04Day07,
+];
 
 async function main() {
   const client = new Client({ connectionString: DATABASE_URL });

@@ -21,8 +21,8 @@ because they're fundamentally different kinds of data:
   `src/content/lessons/**/*.ts`. This is NOT mechanical: the source workbook
   only ever specified quest *shape* (titles + types + task counts), never
   the actual exercises, so this only covers what's been hand-authored so
-  far (Week 1 / Days 1–2). See "why lesson content can't be bulk-loaded"
-  below for why these two are different problems.
+  far (Weeks 1–4 / Days 1–28 of 350). See "why lesson content can't be
+  bulk-loaded" below for why these two are different problems.
 
 `content/curriculum/**/*.json` and `src/content/lessons/**/*.ts` remain on
 disk as the *source* for both migrations (edit them, re-run the migration —
@@ -137,7 +137,7 @@ from `src/app`, so this doesn't affect app size or the mobile build).
 - **`npm run db:migrate`** — converts `src/content/lessons/**` into
   `content_items` + `content_translations` (locale `en`+`hi`, `source:
   'human'`) and upserts into Postgres. Idempotent — re-run after editing a
-  lesson file. Currently only Week 1 / Days 1–2 exist, so this is what's in
+  lesson file. Currently Weeks 1–4 / Days 1–28 exist, so this is what's in
   the DB; extending it to all 7 personas × 3 levels × 50 weeks means
   authoring those lesson files first (see `docs/CURRICULUM_DATA.md`).
 - **`npm run db:translate -- --locales ta,te,bn`** — machine-translates every
@@ -232,21 +232,29 @@ process to set up, not a bug fix.
    etc. aren't in `content_translations` — a fully multi-language *UI*
    (Home screen included, not just lessons) would need that too.
 4. **No review workflow** for `machine` → `machine_reviewed`, per above.
-5. **Week 1 (Days 1–7) has authored lesson content; Weeks 2–50 don't yet.**
-   The blueprint row exists for all 350 days (so Home correctly shows every
-   day's real `daily_mini_outcome` as locked/"Soon" once its content_items
-   don't exist), but `content_items` only covers Week 1. Days 3–7 introduced
-   quest types Days 1–2 didn't need — "Listen & Notice" (`listening`),
-   "Talk with Nova" (`conversation`), "Build It in Writing" (`writing`),
-   "Warm-up" (`practice`) and "Weekly Mission" (`mission`) — all reused via
-   the existing `intro`/`rule`/`mcq`/`build`/`speak` task types rather than
-   new ones (see week-01-day-0{3,4,5,6,7}.ts's comments for how each maps),
-   which needed two schema fixes: every step now carries an explicit
-   `quest: number` (was inferred from `task_type`, which broke once a quest
-   reused a type another quest also used), and `intro`/`mcq`/`build`/`speak`
-   gained an optional `audioTextEn` (+ `PlayAudioButton`, `expo-speech`) for
-   listening checks, plus `speak` gained an optional `missionLabel` for Day
-   7's capstone. Days 1, 2, 3 and 7 were click-tested end to end in the
-   browser (including the "WEEKLY MISSION" label and a real completion
-   report); Days 4–6 were verified via the API response shape and
-   typecheck/lint only, not a full interactive run-through.
+5. **Weeks 1–4 (Days 1–28) have authored lesson content; Weeks 5–50 don't
+   yet.** The blueprint row exists for all 350 days (so Home correctly shows
+   every day's real `daily_mini_outcome` as locked/"Soon" once its
+   content_items don't exist), but `content_items` only covers Weeks 1–4.
+   Days 3–7 of Week 1 introduced quest types Days 1–2 didn't need — "Listen &
+   Notice" (`listening`), "Talk with Nova" (`conversation`), "Build It in
+   Writing" (`writing`), "Warm-up" (`practice`) and "Weekly Mission"
+   (`mission`) — all reused via the existing `intro`/`rule`/`mcq`/`build`/
+   `speak` task types rather than new ones (see week-01-day-0{3,4,5,6,7}.ts's
+   comments for how each maps), which needed two schema fixes: every step now
+   carries an explicit `quest: number` (was inferred from `task_type`, which
+   broke once a quest reused a type another quest also used), and
+   `intro`/`mcq`/`build`/`speak` gained an optional `audioTextEn` (+
+   `PlayAudioButton`, `expo-speech`) for listening checks, plus `speak`
+   gained an optional `missionLabel` for Day 7's capstone. Weeks 2–4 added
+   "Read & Understand" (`reading`, reusing `intro`/`mcq`/`build` without
+   `audioTextEn` — see week-02-day-03.ts) and exercised `quest_count=1`
+   pure-conversation days with an empty `learnFlow` (week-03-day-05.ts,
+   week-04-day-06.ts), which surfaced and fixed a real crash in
+   `src/app/lesson.tsx`: it unconditionally rendered `learnFlow[0]` on
+   mount, assuming every day has at least one learn step. Days 1, 2, 3, 7
+   of Week 1, Week 2 Day 1 (click-tested through intro/rule/mcq), and the
+   Week 3/4 empty-`learnFlow` days were click-tested end to end in the
+   browser; the remaining Week 2–4 days were verified via the
+   blueprint-consistency script (quest/type/skill_id checks, 0 failures) and
+   typecheck/lint only, not a full interactive run-through of every day.
