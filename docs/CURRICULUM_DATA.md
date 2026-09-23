@@ -38,10 +38,12 @@ ad-hoc from screens.
 - `skills.json.suggested_prerequisite_relationship` and `days.json.primary_skills`
   are free text, not normalized arrays of `skill_id`s — needed for an actual
   prerequisite graph / mastery engine.
-- No `content_items` layer yet (§23 of the philosophy doc) — `days.json`
-  describes quest *shape* (titles + types), not the actual tasks/sentences/
-  audio inside each quest. That's the next authoring layer.
+- The `content_items` layer (§23 of the philosophy doc) — the actual tasks/
+  sentences inside each quest, as opposed to `days.json`'s quest *shape*
+  (titles + types) — now exists for Week 1 / Days 1–2 as hand-authored
+  `src/content/lessons/**` files, and there's a Postgres schema +
+  migration/translation pipeline for it in `docs/CONTENT_DATABASE.md` /
+  `supabase/migrations/` / `scripts/db/`. Still only 2 of 350 days, and the
+  running app doesn't read from that database yet — see
+  `docs/CONTENT_DATABASE.md`'s "what's not done yet" for the rest.
 - Only one of the eventual 21 tracks (7 personas × 3 levels) exists.
-- Not yet loaded into a database — flat JSON is fine for the web prototype,
-  but the data model in §23/§27 of the philosophy doc anticipates a real
-  schema (Postgres/Supabase or similar) once we're past prototyping.
