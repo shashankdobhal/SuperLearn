@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { HintCard } from '@/components/supernova/HintCard';
+import { speak } from '@/components/supernova/PlayAudioButton';
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
 import { Colors, Radii, Space } from '@/constants/palette';
 import type { SpeakStep } from '@/lib/curriculum/lesson-types';
@@ -60,7 +61,7 @@ export function SpeakCard({
         : 'Well done! Keep going.';
 
   function play() {
-    Speech.speak(step.promptEn, { language: 'en-US' });
+    speak(step.promptEn, 'en-US');
   }
 
   function startRecording() {
