@@ -19,6 +19,7 @@ export const week01Day01: DayLesson = {
     {
       type: 'intro',
       id: 'intro-1',
+      quest: 1,
       emoji: '👋',
       textHi: 'आज हम सीखेंगे कि खुद को English में कैसे introduce करें — अपना नाम और आप कहाँ से हैं। चलिए शुरू करते हैं!',
       textEn: "Today we'll learn to introduce yourself in English — your name, and where you're from. Let's begin!",
@@ -26,6 +27,7 @@ export const week01Day01: DayLesson = {
     {
       type: 'rule',
       id: 'rule-name',
+      quest: 1,
       pattern: 'My name is + [Name].',
       example: 'My name is Rohan.',
       textHi: 'खुद को introduce करने का सबसे आसान तरीका।',
@@ -33,6 +35,7 @@ export const week01Day01: DayLesson = {
     {
       type: 'rule',
       id: 'rule-from',
+      quest: 1,
       pattern: 'I am from + [Place].',
       example: 'I am from Mumbai.',
       textHi: 'अपनी जगह बताने के लिए यह pattern use करें।',
@@ -40,6 +43,7 @@ export const week01Day01: DayLesson = {
     {
       type: 'mcq',
       id: 'mcq-name',
+      quest: 1,
       promptHi: 'खुद को सही तरीके से introduce करने वाला sentence कौन सा है?',
       promptEn: 'Which sentence correctly introduces yourself?',
       options: [
@@ -53,6 +57,7 @@ export const week01Day01: DayLesson = {
     {
       type: 'mcq',
       id: 'mcq-from',
+      quest: 1,
       isPopQuiz: true,
       promptHi: 'आप कहाँ से हैं, यह बताने का सही तरीका चुनें।',
       promptEn: 'Choose the correct way to say where you are from.',
@@ -68,6 +73,7 @@ export const week01Day01: DayLesson = {
     {
       type: 'build',
       id: 'build-name',
+      quest: 2,
       promptHi: 'मेरा नाम रोहन है।',
       answer: ['My', 'name', 'is', 'Rohan'],
       hint: { pattern: 'My name is + [Name]', example: 'My name is Aisha.' },
@@ -75,6 +81,7 @@ export const week01Day01: DayLesson = {
     {
       type: 'build',
       id: 'build-from',
+      quest: 2,
       promptHi: 'मैं मुंबई से हूँ।',
       answer: ['I', 'am', 'from', 'Mumbai'],
       hint: { pattern: 'I am from + [Place]', example: 'I am from Delhi.' },
@@ -82,6 +89,7 @@ export const week01Day01: DayLesson = {
     {
       type: 'build',
       id: 'build-work',
+      quest: 2,
       promptHi: 'मैं एक teacher के रूप में काम करता हूँ।',
       answer: ['I', 'work', 'as', 'a', 'teacher'],
       hint: { pattern: 'I work as a + [job]', example: 'I work as a designer.' },
@@ -89,6 +97,7 @@ export const week01Day01: DayLesson = {
     {
       type: 'build',
       id: 'build-interest',
+      quest: 2,
       promptHi: 'मुझे किताबें पढ़ना पसंद है।',
       answer: ['I', 'like', 'reading', 'books'],
       hint: { pattern: 'I like + [verb-ing] + [noun]', example: 'I like playing football.' },

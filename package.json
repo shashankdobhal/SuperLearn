@@ -50,6 +50,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "db:migrate": "tsx --env-file-if-exists=.env scripts/db/migrate-lessons.ts",
+    "db:migrate:curriculum": "tsx --env-file-if-exists=.env scripts/db/migrate-curriculum.ts",
     "db:translate": "tsx --env-file-if-exists=.env scripts/db/translate.ts",
     "server": "tsx --env-file-if-exists=.env server/index.ts"
   },

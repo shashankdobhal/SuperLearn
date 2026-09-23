@@ -31,27 +31,28 @@ export interface TranslationRow {
 }
 
 /**
- * A day's learnFlow is quest_1 ("Learn the Rule") followed, only on days
- * that have one, by quest_2 ("Practice with Translation") — inferred from
- * task_type rather than tagged explicitly, since intro/rule/mcq always
- * belong to the Learn quest and build always belongs to the Translation
- * quest in the lessons authored so far. speakFlow is always the day's last
- * quest. This mirrors quest_N/quest_N_type in days.json without needing the
- * lesson files to duplicate that bookkeeping.
+ * Each learnFlow step carries an explicit `quest` (1-based, matching
+ * days.json's quest_N ordering) — earlier versions of this file inferred it
+ * from task_type (build ⇒ quest 2, everything else ⇒ quest 1), which broke
+ * as soon as a day reused a task_type across two different quests (Day 3's
+ * "Listen & Notice" quest reuses 'mcq'/'build' for identify/meaning/retell
+ * checks — see week-01-day-03.ts). speakFlow is always the day's last quest.
  */
 export function lessonToRows(lesson: DayLesson): { items: ContentItemRow[]; translations: TranslationRow[] } {
   const items: ContentItemRow[] = [];
   const translations: TranslationRow[] = [];
 
-  const hasBuildQuest = lesson.learnFlow.some((s) => s.type === 'build');
-  const speakQuestIndex = hasBuildQuest ? 3 : 2;
-
-  let learnTaskIndex = 0;
-  let translateTaskIndex = 0;
+  const speakQuestIndex = Math.max(0, ...lesson.learnFlow.map((s) => s.quest)) + 1;
+  const taskIndexByQuest = new Map<number, number>();
+  const nextTaskIndex = (quest: number) => {
+    const i = taskIndexByQuest.get(quest) ?? 0;
+    taskIndexByQuest.set(quest, i + 1);
+    return i;
+  };
 
   for (const step of lesson.learnFlow) {
-    const questIndex = step.type === 'build' ? 2 : 1;
-    const taskIndex = step.type === 'build' ? translateTaskIndex++ : learnTaskIndex++;
+    const questIndex = step.quest;
+    const taskIndex = nextTaskIndex(questIndex);
     const { payload, fields } = splitLearnStep(step);
 
     items.push({
@@ -112,7 +113,7 @@ function splitLearnStep(step: LearnFlowStep): { payload: Record<string, unknown>
 
 function splitIntro(step: IntroStep) {
   return {
-    payload: { emoji: step.emoji },
+    payload: { emoji: step.emoji, audioTextEn: step.audioTextEn ?? null },
     fields: { en: { text: step.textEn }, hi: { text: step.textHi } } as FieldsByLocale,
   };
 }
@@ -133,6 +134,7 @@ function splitMcq(step: McqStep) {
       isPopQuiz: step.isPopQuiz ?? false,
       options: step.options,
       hint: step.hint ?? null,
+      audioTextEn: step.audioTextEn ?? null,
     },
     fields: {
       en: { prompt: step.promptEn, explanation: step.explanationEn },
@@ -147,6 +149,7 @@ function splitBuild(step: BuildStep) {
       answer: step.answer,
       distractors: step.distractors ?? [],
       hint: step.hint,
+      audioTextEn: step.audioTextEn ?? null,
     },
     // BuildCard only renders promptHi today (same toggle gap as rule cards).
     fields: { hi: { prompt: step.promptHi } } as FieldsByLocale,

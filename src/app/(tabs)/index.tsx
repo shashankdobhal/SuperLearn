@@ -1,22 +1,21 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
 import { Colors, Radii, Space } from '@/constants/palette';
+import { fetchDaysForWeek, fetchWeek, type DayRow as DayData, type WeekRow } from '@/lib/api/curriculum';
 import { fetchAvailableDays } from '@/lib/api/lessons';
-import { getDaysForWeek, getWeek } from '@/lib/curriculum/data';
 import { questTypeIcon } from '@/lib/curriculum/questIcons';
-import type { DayRecord, QuestType } from '@/lib/curriculum/types';
+import type { QuestType } from '@/lib/curriculum/types';
 
 const CURRENT_WEEK = 1;
 
 export default function HomeScreen() {
-  const week = getWeek(CURRENT_WEEK)!;
-  const daysInWeek = getDaysForWeek(CURRENT_WEEK);
-  const today = daysInWeek[0];
-
+  // undefined = still loading, null = the API/Postgres couldn't be reached.
+  const [week, setWeek] = useState<WeekRow | null | undefined>(undefined);
+  const [daysInWeek, setDaysInWeek] = useState<DayData[]>([]);
   // null = still loading (every day renders locked until this resolves, to
   // avoid a flash of "unlocked" before we actually know).
   const [availableDays, setAvailableDays] = useState<number[] | null>(null);
@@ -24,6 +23,18 @@ export default function HomeScreen() {
 
   useEffect(() => {
     let cancelled = false;
+    Promise.all([fetchWeek(CURRENT_WEEK), fetchDaysForWeek(CURRENT_WEEK)])
+      .then(([weekRow, days]) => {
+        if (cancelled) return;
+        setWeek(weekRow);
+        setDaysInWeek(days);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setWeek(null);
+          setServerUnreachable(true);
+        }
+      });
     fetchAvailableDays(CURRENT_WEEK)
       .then((days) => {
         if (!cancelled) setAvailableDays(days);
@@ -39,6 +50,8 @@ export default function HomeScreen() {
     };
   }, []);
 
+  const today = daysInWeek[0];
+
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -51,31 +64,37 @@ export default function HomeScreen() {
           <View style={styles.warningBanner}>
             <Ionicons name="warning" size={16} color={Colors.warning} />
             <Text style={styles.warningText}>
-              Can&apos;t reach the lesson server — run `npm run server` (and Postgres) to unlock lessons.
+              Can&apos;t reach the lesson server — run `npm run server` (and Postgres) to load the curriculum.
             </Text>
           </View>
         )}
 
-        <View style={styles.weekCard}>
-          <Text style={styles.sectionLabel}>SECTION 1 · WEEK {week.week}</Text>
-          <Text style={styles.weekArc}>{week.week_arc}</Text>
-          <Text style={styles.weeklyOutcome}>{week.weekly_outcome}</Text>
-        </View>
+        {week === undefined ? (
+          <ActivityIndicator color={Colors.primary} style={styles.loadingIndicator} />
+        ) : week === null ? null : (
+          <>
+            <View style={styles.weekCard}>
+              <Text style={styles.sectionLabel}>SECTION 1 · WEEK {week.week}</Text>
+              <Text style={styles.weekArc}>{week.week_arc}</Text>
+              <Text style={styles.weeklyOutcome}>{week.weekly_outcome}</Text>
+            </View>
 
-        <TodayCard day={today} ready={availableDays?.includes(today.day) ?? false} />
+            {today && <TodayCard day={today} ready={availableDays?.includes(today.day) ?? false} />}
 
-        <Text style={styles.pathHeader}>This week</Text>
-        <View style={styles.path}>
-          {daysInWeek.map((d) => (
-            <DayRow key={d.day} day={d} ready={availableDays?.includes(d.day) ?? false} />
-          ))}
-        </View>
+            <Text style={styles.pathHeader}>This week</Text>
+            <View style={styles.path}>
+              {daysInWeek.map((d) => (
+                <DayRow key={d.day} day={d} ready={availableDays?.includes(d.day) ?? false} />
+              ))}
+            </View>
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-function TodayCard({ day, ready }: { day: DayRecord; ready: boolean }) {
+function TodayCard({ day, ready }: { day: DayData; ready: boolean }) {
   const quests = [
     [day.quest_1, day.quest_1_type],
     [day.quest_2, day.quest_2_type],
@@ -110,7 +129,7 @@ function TodayCard({ day, ready }: { day: DayRecord; ready: boolean }) {
   );
 }
 
-function DayRow({ day, ready }: { day: DayRecord; ready: boolean }) {
+function DayRow({ day, ready }: { day: DayData; ready: boolean }) {
   return (
     <Pressable
       disabled={!ready}
@@ -168,6 +187,9 @@ const styles = StyleSheet.create({
     color: Colors.warning,
     fontSize: 12,
     flex: 1,
+  },
+  loadingIndicator: {
+    marginTop: Space.xxl,
   },
   weekCard: {
     backgroundColor: Colors.bgCard,

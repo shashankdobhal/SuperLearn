@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { FeedbackPanel } from '@/components/supernova/lesson/FeedbackPanel';
 import { HintCard } from '@/components/supernova/HintCard';
 import type { SupportLanguage } from '@/components/supernova/LanguageToggle';
+import { PlayAudioButton } from '@/components/supernova/PlayAudioButton';
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
 import { Colors, Radii, Space } from '@/constants/palette';
 import type { McqStep } from '@/lib/curriculum/lesson-types';
@@ -29,6 +30,8 @@ export function McqCard({
           <Text style={styles.popQuizText}>POP QUIZ</Text>
         </View>
       ) : null}
+
+      {step.audioTextEn ? <PlayAudioButton text={step.audioTextEn} /> : null}
 
       <Text style={styles.prompt}>{language === 'hi' ? step.promptHi : step.promptEn}</Text>
 

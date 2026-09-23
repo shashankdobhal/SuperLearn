@@ -1,16 +1,5 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-
+import { getDay } from './curriculum';
 import { pool } from './db';
-
-// days.json stays static (see docs/CONTENT_DATABASE.md — it's curriculum
-// blueprint, not per-learner content), read directly rather than via the
-// app's src/lib/curriculum/data.ts since this is a plain Node process, not
-// bundled by Metro.
-const daysPath = join(__dirname, '..', 'content', 'curriculum', 'everyday-confidence', 'beginner', 'days.json');
-const days: Array<{ week: number; day: number; weekly_outcome: string; daily_mini_outcome: string }> = JSON.parse(
-  readFileSync(daysPath, 'utf-8'),
-);
 
 interface ContentItemRow {
   id: string;
@@ -36,7 +25,7 @@ interface TranslationRow {
  * (see docs/CONTENT_DATABASE.md).
  */
 export async function getDayLesson(week: number, day: number) {
-  const dayMeta = days.find((d) => d.week === week && d.day === day);
+  const dayMeta = await getDay(week, day);
   if (!dayMeta) return null;
 
   const { rows: items } = await pool.query<ContentItemRow>(
@@ -62,13 +51,29 @@ export async function getDayLesson(week: number, day: number) {
     const p = item.payload;
     switch (item.task_type) {
       case 'intro':
-        return { type: 'intro', id: item.id, emoji: p.emoji, textHi: hi?.text ?? '', textEn: en?.text ?? '' };
+        return {
+          type: 'intro',
+          id: item.id,
+          quest: item.quest_index,
+          emoji: p.emoji,
+          textHi: hi?.text ?? '',
+          textEn: en?.text ?? '',
+          audioTextEn: p.audioTextEn ?? undefined,
+        };
       case 'rule':
-        return { type: 'rule', id: item.id, pattern: p.pattern, example: p.example, textHi: hi?.text ?? '' };
+        return {
+          type: 'rule',
+          id: item.id,
+          quest: item.quest_index,
+          pattern: p.pattern,
+          example: p.example,
+          textHi: hi?.text ?? '',
+        };
       case 'mcq':
         return {
           type: 'mcq',
           id: item.id,
+          quest: item.quest_index,
           isPopQuiz: p.isPopQuiz ?? false,
           options: p.options,
           hint: p.hint ?? undefined,
@@ -76,15 +81,18 @@ export async function getDayLesson(week: number, day: number) {
           promptEn: en?.prompt ?? '',
           explanationHi: hi?.explanation ?? '',
           explanationEn: en?.explanation ?? '',
+          audioTextEn: p.audioTextEn ?? undefined,
         };
       case 'build':
         return {
           type: 'build',
           id: item.id,
+          quest: item.quest_index,
           promptHi: hi?.prompt ?? '',
           answer: p.answer,
           distractors: p.distractors ?? undefined,
           hint: p.hint,
+          audioTextEn: p.audioTextEn ?? undefined,
         };
       case 'speak':
         return {

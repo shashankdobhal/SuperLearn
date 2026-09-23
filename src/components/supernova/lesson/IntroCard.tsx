@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
+import { PlayAudioButton } from '@/components/supernova/PlayAudioButton';
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
 import { Colors, Radii, Space } from '@/constants/palette';
 import type { SupportLanguage } from '@/components/supernova/LanguageToggle';
@@ -17,6 +18,7 @@ export function IntroCard({
   return (
     <View style={styles.card}>
       <Text style={styles.emoji}>{step.emoji}</Text>
+      {step.audioTextEn ? <PlayAudioButton text={step.audioTextEn} /> : null}
       <Text style={styles.text}>{language === 'hi' ? step.textHi : step.textEn}</Text>
       <PrimaryButton label="NEXT!" onPress={onNext} style={styles.button} />
     </View>

@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { FeedbackPanel } from '@/components/supernova/lesson/FeedbackPanel';
 import { HintCard } from '@/components/supernova/HintCard';
+import { PlayAudioButton } from '@/components/supernova/PlayAudioButton';
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
 import { Colors, Radii, Space } from '@/constants/palette';
 import type { BuildStep } from '@/lib/curriculum/lesson-types';
@@ -62,6 +63,7 @@ export function BuildCard({
 
   return (
     <View style={styles.card}>
+      {step.audioTextEn ? <PlayAudioButton text={step.audioTextEn} /> : null}
       <Text style={styles.prompt}>{step.promptHi}</Text>
       <HintCard hint={step.hint} />
 

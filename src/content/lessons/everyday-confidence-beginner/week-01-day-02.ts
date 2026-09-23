@@ -21,6 +21,7 @@ export const week01Day02: DayLesson = {
     {
       type: 'intro',
       id: 'intro-1',
+      quest: 1,
       emoji: '🏠',
       textHi: 'आज हम सीखेंगे कि आप कहाँ रहते हैं और क्या करते हैं — यह English में कैसे बताएं। चलिए शुरू करते हैं!',
       textEn: "Today we'll learn to say where you live and what you do in English. Let's begin!",
@@ -28,6 +29,7 @@ export const week01Day02: DayLesson = {
     {
       type: 'rule',
       id: 'rule-live',
+      quest: 1,
       pattern: 'I live in + [Place].',
       example: 'I live in Pune.',
       textHi: 'आप कहाँ रहते हैं यह बताने के लिए यह pattern use करें।',
@@ -35,6 +37,7 @@ export const week01Day02: DayLesson = {
     {
       type: 'rule',
       id: 'rule-do',
+      quest: 1,
       pattern: 'I work as a / I study + [subject].',
       example: 'I study Computer Science.',
       textHi: 'आप क्या करते हैं — काम या पढ़ाई — यह बताने के लिए।',
@@ -42,6 +45,7 @@ export const week01Day02: DayLesson = {
     {
       type: 'mcq',
       id: 'mcq-live',
+      quest: 1,
       promptHi: 'कौन सा sentence सही तरीके से बताता है कि आप कहाँ रहते हैं?',
       promptEn: 'Which sentence correctly says where you live?',
       options: [
@@ -55,6 +59,7 @@ export const week01Day02: DayLesson = {
     {
       type: 'mcq',
       id: 'mcq-do',
+      quest: 1,
       isPopQuiz: true,
       promptHi: 'आप क्या करते हैं यह बताने का सही तरीका चुनें।',
       promptEn: 'Choose the correct way to say what you do.',

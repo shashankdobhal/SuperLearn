@@ -2,10 +2,13 @@
 
 `content/curriculum/<persona-slug>/<level-slug>/` holds the structured
 curriculum for one persona × level track, parsed directly from the source
-spreadsheet(s) in `docs/sources/`. This is seed/reference data — the runtime
-app should read curriculum through a data-access layer (see
-`src/lib/curriculum.ts`, once it exists), never import these JSON files
-ad-hoc from screens.
+spreadsheet(s) in `docs/sources/`. This is *seed* data now — `npm run
+db:migrate:curriculum` loads all of it into Postgres (`weeks`/`days`/
+`skills`/`quest_types`/`speaking_rubric`/`design_rules`, see
+`docs/CONTENT_DATABASE.md`), and the running app reads it from there via
+`server/curriculum.ts` + `src/lib/api/curriculum.ts`, not by importing these
+JSON files. Edit the JSON (or re-parse the source workbook), then re-run the
+migration — it's idempotent.
 
 ## `everyday-confidence/beginner/` (source of truth — see CURRICULUM_PHILOSOPHY.md)
 

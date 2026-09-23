@@ -6,14 +6,44 @@ rationale this implements.
 
 ## Current state (as of this writing)
 
-**The running app reads lesson content from Postgres, via a small local API
-server** (`server/`, `npm run server`) — see "The app ↔ API ↔ Postgres wiring"
-below. `content/curriculum/**/*.json` (weeks/days/skills — the curriculum
-*blueprint*) is still static, by design (see "why a database, and why this
-split"). `src/content/lessons/**/*.ts` still exists too, but only as the
-human-authored *input* to `npm run db:migrate` now — the app no longer
-imports those files directly. See "What's not done yet" below for what's
-still missing (a real hosted Supabase project, chief among them).
+**The running app reads everything — the full 50-week/350-day curriculum
+blueprint AND the authored lesson content — from Postgres**, via a small
+local API server (`server/`, `npm run server`). Two separate migrations,
+because they're fundamentally different kinds of data:
+
+- `npm run db:migrate:curriculum` loads the **blueprint** — all 50 weeks,
+  all 350 days, the quest-type library, speaking rubric, design rules —
+  straight from `content/curriculum/**/*.json` (which came from the source
+  workbook). This is mechanical: the data already existed in full, nothing
+  needed authoring, so all 350 days went in in one shot.
+- `npm run db:migrate` loads the **authored task content** — the actual
+  sentences, MCQ options, hints, speak prompts inside each quest — from
+  `src/content/lessons/**/*.ts`. This is NOT mechanical: the source workbook
+  only ever specified quest *shape* (titles + types + task counts), never
+  the actual exercises, so this only covers what's been hand-authored so
+  far (Week 1 / Days 1–2). See "why lesson content can't be bulk-loaded"
+  below for why these two are different problems.
+
+`content/curriculum/**/*.json` and `src/content/lessons/**/*.ts` remain on
+disk as the *source* for both migrations (edit them, re-run the migration —
+both are idempotent) — the app no longer imports either directly. See
+"What's not done yet" below for what's still missing (a real hosted Supabase
+project, chief among them).
+
+## Why lesson content can't be bulk-loaded the way the blueprint was
+
+The blueprint (weeks/days) answers "what quests exist, in what order, about
+what." It came out of the Excel workbook complete, so migrating it was a
+data-format conversion — no new thinking required, hence all 350 days at
+once. Lesson content answers "what specific sentence, what specific wrong
+answer, what specific hint" — none of that exists in the workbook. It's
+generated per the rules in `docs/CURRICULUM_PHILOSOPHY.md` §29/§33 (define
+the skill, the grammar support, the speaking evidence, the likely failure
+modes, ...) and reviewed against the running app before being called done —
+which is why it's gone one (or a couple of) day(s) at a time rather than
+all 350 at once. That pace can speed up (batching several days per pass
+instead of one), but "instant, like the blueprint" isn't really available
+for this half — there's no source data to convert, only content to write.
 
 ## Why a database, and why this split
 
@@ -38,7 +68,9 @@ because the schema below is *plain* Postgres — nothing Supabase-specific —
 so `DATABASE_URL` pointed at any Postgres works identically (including the
 local one these scripts were validated against).
 
-## Schema (`supabase/migrations/0001_content_translations.sql`)
+## Schema
+
+`supabase/migrations/0001_content_translations.sql` — authored lesson content:
 
 ```
 skills                 -- mirrors skills.json; content_items.skill_id → here
@@ -51,6 +83,27 @@ content_translations
   fields: jsonb          -- TRANSLATABLE copy for that locale
   source: human | machine | machine_reviewed
 ```
+
+`supabase/migrations/0002_curriculum_blueprint.sql` — the curriculum
+blueprint (persona/level-scoped since the product is 7 personas × 3 levels;
+skills and quest_types are deliberately NOT scoped — they're meant to be
+shared across personas per `docs/CURRICULUM_PHILOSOPHY.md` §4):
+
+```
+weeks           (persona, level, week) unique   -- the 50-week map
+days            (persona, level, week, day) unique  -- the 350-day curriculum
+quest_types     quest_type primary key           -- the reusable quest-type library
+speaking_rubric (persona, level, dimension) unique
+design_rules    id primary key
+```
+
+**One data-quality note surfaced by loading this**: `skills.json` has 49
+rows but only 48 distinct `skill_id`s — `describe_place` appears twice
+(introduced_week 2 and 39, slightly different prerequisite notes). Since
+`skill_id` is the primary key, only the week-39 version survives in the
+`skills` table. Not fixed — it's not obvious which was intended (could be a
+genuine "revisit this skill later" or a workbook duplication), so flagging
+it rather than guessing which one is "correct."
 
 `payload` shape depends on `task_type` (pattern/example for `rule`,
 options+hint for `mcq`, answer+hint for `build`, hint+isFinal for `speak`).
@@ -75,6 +128,12 @@ learner.
 These are dev tooling, not part of the Expo app bundle (Metro only bundles
 from `src/app`, so this doesn't affect app size or the mobile build).
 
+- **`npm run db:migrate:curriculum`** — loads the full blueprint (all 50
+  weeks / 350 days / quest types / speaking rubric / design rules) from
+  `content/curriculum/everyday-confidence/beginner/*.json` into `weeks`/
+  `days`/`quest_types`/`speaking_rubric`/`design_rules`/`skills`.
+  Idempotent (upserts on the natural key) — re-run after re-parsing the
+  source workbook.
 - **`npm run db:migrate`** — converts `src/content/lessons/**` into
   `content_items` + `content_translations` (locale `en`+`hi`, `source:
   'human'`) and upserts into Postgres. Idempotent — re-run after editing a
@@ -119,16 +178,21 @@ Expo app  --fetch-->  server/ (Express, npm run server, :4000)  --pg-->  Postgre
   `content_items` + `content_translations` for that day and reassembles the
   exact `DayLesson`/`LearnFlowStep`/`SpeakStep` shape
   (`src/lib/curriculum/lesson-types.ts`) the lesson screen already renders,
-  merging in `weekly_outcome`/`daily_mini_outcome` from `days.json` (still
-  static, per above). 404s if that day has no `content_items` yet — the
+  merging in `weekly_outcome`/`daily_mini_outcome` from the `days` table
+  (`server/curriculum.ts`). 404s if that day has no `content_items` yet — the
   inverse of `scripts/db/lib/toRows.ts`'s DayLesson → rows mapping.
 - **`GET /api/lessons/available?week=1`** — which days in that week have
-  content, for the Home screen's lock/unlock state.
-- `src/lib/api/{client,lessons}.ts` on the app side; `src/app/(tabs)/index.tsx`
-  and `src/app/lesson.tsx` fetch instead of importing static content, with
-  loading and "can't reach the server" states (the app degrades to
-  everything-locked + a warning banner rather than crashing if `npm run
-  server` or Postgres isn't running).
+  authored content (`content_items` exists), for the Home screen's
+  lock/unlock state — distinct from `GET /api/curriculum/weeks/:week/days`,
+  which returns all 7 days' *blueprint* whether or not they're authored yet.
+- **`GET /api/curriculum/weeks/:week`** / **`GET
+  /api/curriculum/weeks/:week/days`** — the blueprint itself, from
+  `server/curriculum.ts` (`weeks`/`days` tables).
+- `src/lib/api/{client,lessons,curriculum}.ts` on the app side;
+  `src/app/(tabs)/index.tsx` and `src/app/lesson.tsx` fetch instead of
+  importing static content, with loading and "can't reach the server" states
+  (the app degrades to everything-locked + a warning banner rather than
+  crashing if `npm run server` or Postgres isn't running).
 - Still returns **both `hi` and `en` text** per item (not a single resolved
   locale) — the in-lesson Hindi/English toggle keeps working exactly as
   before. Serving Tamil/Telugu/etc. to the app is a separate, later step
@@ -163,13 +227,21 @@ process to set up, not a bug fix.
    the app needs a real "choose your support language" setting somewhere
    (Account tab, once it exists) driving a `?locale=` on `GET
    /api/lessons/:week/:day`, not just the translated rows existing in the DB.
-3. **`weeks`/`days` (the curriculum blueprint) stay as JSON.** They're
-   structural (which quests exist, in what order) rather than per-learner
-   content, so there's less urgency — but the Home screen's
-   `weekly_outcome`/`daily_mini_outcome` text is English-only today and
-   would need the same content_translations treatment for a fully
-   multi-language UI, not just multi-language lessons.
+3. **The blueprint's own text is English-only.** `weeks`/`days` are fully in
+   Postgres now (all 350 days), but `weekly_outcome`/`daily_mini_outcome`
+   etc. aren't in `content_translations` — a fully multi-language *UI*
+   (Home screen included, not just lessons) would need that too.
 4. **No review workflow** for `machine` → `machine_reviewed`, per above.
-5. **Only Week 1 / Days 1–2 exist** in the DB — same authoring bottleneck as
-   the JSON/TS files; the DB doesn't create content, it just stores and
-   translates what's authored.
+5. **Only Week 1 / Days 1–2 have authored lesson content** — the blueprint
+   row exists for all 350 days (so Home correctly shows Day 3's real
+   `daily_mini_outcome`, "Talk about one interest," as locked/"Soon"), but
+   `content_items` only has actual tasks for Days 1–2. Day 3 specifically
+   introduces a "Listen & Notice" quest (`quest_2_type: 'listening'` in
+   `days.json`) that Days 1–2 didn't need — `lesson-types.ts`'s
+   `IntroStep`/`McqStep`/`BuildStep` gained an optional `audioTextEn` (with
+   a `PlayAudioButton` in the matching cards) so a listening check can reuse
+   those task types rather than needing a whole new one, and every
+   learnFlow step now carries an explicit `quest: number` instead of it
+   being inferred from `task_type` (inferring broke as soon as a quest
+   needed to reuse a task_type another quest also uses). Day 3's actual
+   content isn't written yet.

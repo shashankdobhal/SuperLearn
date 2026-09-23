@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 
+import { getDaysForWeek, getWeek } from './curriculum';
 import { getAvailableDays, getDayLesson } from './lessons';
 
 const app = express();
@@ -31,6 +32,22 @@ app.get('/api/lessons/:week/:day', async (req, res) => {
     return;
   }
   res.json(lesson);
+});
+
+app.get('/api/curriculum/weeks/:week', async (req, res) => {
+  const week = Number(req.params.week);
+  const weekRow = await getWeek(week);
+  if (!weekRow) {
+    res.status(404).json({ error: 'week_not_found' });
+    return;
+  }
+  res.json(weekRow);
+});
+
+app.get('/api/curriculum/weeks/:week/days', async (req, res) => {
+  const week = Number(req.params.week);
+  const days = await getDaysForWeek(week);
+  res.json({ week, days });
 });
 
 app.listen(PORT, () => {
