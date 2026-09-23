@@ -1,0 +1,54 @@
+[
+  {
+    "rule": "Daily load",
+    "specification": "1–4 quests/day; days can be intentionally light."
+  },
+  {
+    "rule": "Quest size",
+    "specification": "Normally 5–8 tasks/questions/to-dos."
+  },
+  {
+    "rule": "Daily outcome",
+    "specification": "Every day has a concrete, learner-facing mini-outcome."
+  },
+  {
+    "rule": "Speaking priority",
+    "specification": "Most days should contain Speak and/or Converse; pure input/review days should be occasional and purposeful."
+  },
+  {
+    "rule": "Weekly mission",
+    "specification": "Day 7 normally demonstrates the weekly speaking outcome."
+  },
+  {
+    "rule": "Repeat track",
+    "specification": "Wrong/weak items create parallel retry items targeting the same skill; do not rely on repeating the identical question."
+  },
+  {
+    "rule": "Adaptive load",
+    "specification": "Strong learners may finish in 1 quest; struggling learners may receive additional practice/retry quests."
+  },
+  {
+    "rule": "Grammar",
+    "specification": "Introduce grammar when it unlocks the speaking objective; avoid grammar-first sequencing."
+  },
+  {
+    "rule": "Translation",
+    "specification": "Use the learner's chosen support language. Translation is a bridge to English output, not the end goal."
+  },
+  {
+    "rule": "Spaced repetition",
+    "specification": "Review skills based on mastery and recency; suggested intervals 1/2/4/7/14/30 days."
+  },
+  {
+    "rule": "Content reuse",
+    "specification": "Reuse competencies across personas while changing scenarios, vocabulary and roleplays."
+  },
+  {
+    "rule": "Mastery vs completion",
+    "specification": "Completing a quest is not the same as mastering a skill."
+  },
+  {
+    "rule": "Week completion",
+    "specification": "Weekly completion should depend on demonstrating the weekly speaking outcome, not merely finishing all activities."
+  }
+]

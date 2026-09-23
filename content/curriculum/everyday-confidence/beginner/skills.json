@@ -1,0 +1,345 @@
+[
+  {
+    "skill_id": "introduce_self",
+    "skill": "Introduce yourself",
+    "role": "primary",
+    "introduced_week": 1,
+    "suggested_prerequisite_relationship": "basic sentence formation; be"
+  },
+  {
+    "skill_id": "personal_information",
+    "skill": "Share personal information",
+    "role": "primary",
+    "introduced_week": 1,
+    "suggested_prerequisite_relationship": "introduce_self"
+  },
+  {
+    "skill_id": "describe_place",
+    "skill": "Describe a place",
+    "role": "primary",
+    "introduced_week": 2,
+    "suggested_prerequisite_relationship": "there_is_are; adjectives"
+  },
+  {
+    "skill_id": "express_preference",
+    "skill": "Express a preference",
+    "role": "primary",
+    "introduced_week": 3,
+    "suggested_prerequisite_relationship": "basic likes/dislikes"
+  },
+  {
+    "skill_id": "describe_routine",
+    "skill": "Describe a routine",
+    "role": "primary",
+    "introduced_week": 4,
+    "suggested_prerequisite_relationship": "present simple"
+  },
+  {
+    "skill_id": "describe_family",
+    "skill": "Describe family",
+    "role": "primary",
+    "introduced_week": 5,
+    "suggested_prerequisite_relationship": "possessives; have/has"
+  },
+  {
+    "skill_id": "describe_home",
+    "skill": "Describe home",
+    "role": "primary",
+    "introduced_week": 6,
+    "suggested_prerequisite_relationship": "there_is_are; prepositions"
+  },
+  {
+    "skill_id": "describe_friend",
+    "skill": "Talk about friends",
+    "role": "primary",
+    "introduced_week": 7,
+    "suggested_prerequisite_relationship": "present simple"
+  },
+  {
+    "skill_id": "express_feeling",
+    "skill": "Express feelings",
+    "role": "primary",
+    "introduced_week": 8,
+    "suggested_prerequisite_relationship": "be; because"
+  },
+  {
+    "skill_id": "express_need",
+    "skill": "Express wants and needs",
+    "role": "primary",
+    "introduced_week": 9,
+    "suggested_prerequisite_relationship": "want/need/would_like"
+  },
+  {
+    "skill_id": "ask_for_help",
+    "skill": "Ask for help",
+    "role": "primary",
+    "introduced_week": 10,
+    "suggested_prerequisite_relationship": "question formation"
+  },
+  {
+    "skill_id": "offer_help",
+    "skill": "Offer help",
+    "role": "primary",
+    "introduced_week": 11,
+    "suggested_prerequisite_relationship": "can/would_like"
+  },
+  {
+    "skill_id": "agree_disagree",
+    "skill": "Agree/disagree",
+    "role": "primary",
+    "introduced_week": 12,
+    "suggested_prerequisite_relationship": "opinion phrases"
+  },
+  {
+    "skill_id": "clarify",
+    "skill": "Ask for clarification",
+    "role": "primary",
+    "introduced_week": 13,
+    "suggested_prerequisite_relationship": "question forms"
+  },
+  {
+    "skill_id": "thank_apologize",
+    "skill": "Thank and apologize",
+    "role": "primary",
+    "introduced_week": 14,
+    "suggested_prerequisite_relationship": "social formulas"
+  },
+  {
+    "skill_id": "invite",
+    "skill": "Invite and respond",
+    "role": "primary",
+    "introduced_week": 15,
+    "suggested_prerequisite_relationship": "would_like/let's"
+  },
+  {
+    "skill_id": "make_plan",
+    "skill": "Make plans",
+    "role": "primary",
+    "introduced_week": 16,
+    "suggested_prerequisite_relationship": "future forms"
+  },
+  {
+    "skill_id": "schedule",
+    "skill": "Talk about time and appointments",
+    "role": "primary",
+    "introduced_week": 17,
+    "suggested_prerequisite_relationship": "time prepositions"
+  },
+  {
+    "skill_id": "order_food",
+    "skill": "Order food",
+    "role": "primary",
+    "introduced_week": 18,
+    "suggested_prerequisite_relationship": "I'd_like; quantities"
+  },
+  {
+    "skill_id": "shopping",
+    "skill": "Handle shopping",
+    "role": "primary",
+    "introduced_week": 20,
+    "suggested_prerequisite_relationship": "questions; comparatives"
+  },
+  {
+    "skill_id": "ask_directions",
+    "skill": "Ask/give directions",
+    "role": "primary",
+    "introduced_week": 21,
+    "suggested_prerequisite_relationship": "imperatives; prepositions"
+  },
+  {
+    "skill_id": "talk_transport",
+    "skill": "Talk about transport",
+    "role": "primary",
+    "introduced_week": 22,
+    "suggested_prerequisite_relationship": "go_by/take"
+  },
+  {
+    "skill_id": "hotel_interaction",
+    "skill": "Handle a hotel interaction",
+    "role": "primary",
+    "introduced_week": 23,
+    "suggested_prerequisite_relationship": "requests; there_is"
+  },
+  {
+    "skill_id": "explain_problem",
+    "skill": "Explain a simple problem",
+    "role": "primary",
+    "introduced_week": 24,
+    "suggested_prerequisite_relationship": "because; can't"
+  },
+  {
+    "skill_id": "describe_past_event",
+    "skill": "Describe past events",
+    "role": "primary",
+    "introduced_week": 25,
+    "suggested_prerequisite_relationship": "past simple"
+  },
+  {
+    "skill_id": "talk_experience",
+    "skill": "Talk about experiences",
+    "role": "primary",
+    "introduced_week": 26,
+    "suggested_prerequisite_relationship": "present perfect basics"
+  },
+  {
+    "skill_id": "tell_story",
+    "skill": "Tell a short story",
+    "role": "primary",
+    "introduced_week": 27,
+    "suggested_prerequisite_relationship": "past simple; sequencing"
+  },
+  {
+    "skill_id": "talk_future",
+    "skill": "Talk about future plans",
+    "role": "primary",
+    "introduced_week": 29,
+    "suggested_prerequisite_relationship": "going_to/will"
+  },
+  {
+    "skill_id": "make_decision",
+    "skill": "Make a decision and explain it",
+    "role": "primary",
+    "introduced_week": 30,
+    "suggested_prerequisite_relationship": "because; comparisons"
+  },
+  {
+    "skill_id": "give_opinion",
+    "skill": "Give a simple opinion",
+    "role": "primary",
+    "introduced_week": 31,
+    "suggested_prerequisite_relationship": "I_think; because"
+  },
+  {
+    "skill_id": "compare",
+    "skill": "Compare familiar things",
+    "role": "primary",
+    "introduced_week": 32,
+    "suggested_prerequisite_relationship": "comparatives"
+  },
+  {
+    "skill_id": "give_advice",
+    "skill": "Give simple advice",
+    "role": "primary",
+    "introduced_week": 33,
+    "suggested_prerequisite_relationship": "should"
+  },
+  {
+    "skill_id": "talk_health",
+    "skill": "Talk about basic health needs",
+    "role": "primary",
+    "introduced_week": 34,
+    "suggested_prerequisite_relationship": "have/feel; should"
+  },
+  {
+    "skill_id": "talk_weather",
+    "skill": "Talk about weather and plans",
+    "role": "primary",
+    "introduced_week": 35,
+    "suggested_prerequisite_relationship": "it's; future"
+  },
+  {
+    "skill_id": "talk_hobby",
+    "skill": "Talk about hobbies",
+    "role": "primary",
+    "introduced_week": 36,
+    "suggested_prerequisite_relationship": "like + ing; frequency"
+  },
+  {
+    "skill_id": "follow_up",
+    "skill": "Keep a conversation going",
+    "role": "primary",
+    "introduced_week": 37,
+    "suggested_prerequisite_relationship": "follow-up questions"
+  },
+  {
+    "skill_id": "describe_person",
+    "skill": "Describe a person",
+    "role": "primary",
+    "introduced_week": 38,
+    "suggested_prerequisite_relationship": "be/have; adjectives"
+  },
+  {
+    "skill_id": "describe_place",
+    "skill": "Describe a place",
+    "role": "primary",
+    "introduced_week": 39,
+    "suggested_prerequisite_relationship": "there_is_are"
+  },
+  {
+    "skill_id": "talk_memory",
+    "skill": "Share a memory",
+    "role": "primary",
+    "introduced_week": 40,
+    "suggested_prerequisite_relationship": "past simple; when"
+  },
+  {
+    "skill_id": "small_talk",
+    "skill": "Handle small talk",
+    "role": "primary",
+    "introduced_week": 41,
+    "suggested_prerequisite_relationship": "greetings; questions"
+  },
+  {
+    "skill_id": "phone_chat",
+    "skill": "Handle basic phone/chat English",
+    "role": "primary",
+    "introduced_week": 42,
+    "suggested_prerequisite_relationship": "clarification; confirmation"
+  },
+  {
+    "skill_id": "solve_problem",
+    "skill": "Solve a small everyday problem",
+    "role": "primary",
+    "introduced_week": 43,
+    "suggested_prerequisite_relationship": "problem/solution language"
+  },
+  {
+    "skill_id": "talk_goals",
+    "skill": "Talk about goals and dreams",
+    "role": "primary",
+    "introduced_week": 44,
+    "suggested_prerequisite_relationship": "want_to; hope_to"
+  },
+  {
+    "skill_id": "talk_change",
+    "skill": "Talk about change",
+    "role": "primary",
+    "introduced_week": 45,
+    "suggested_prerequisite_relationship": "before/now; comparatives"
+  },
+  {
+    "skill_id": "preference_conversation",
+    "skill": "Discuss preferences",
+    "role": "primary",
+    "introduced_week": 46,
+    "suggested_prerequisite_relationship": "prefer/rather"
+  },
+  {
+    "skill_id": "sustain_conversation",
+    "skill": "Sustain a 5-minute conversation",
+    "role": "primary",
+    "introduced_week": 47,
+    "suggested_prerequisite_relationship": "follow-ups; topic shifts"
+  },
+  {
+    "skill_id": "spontaneous_response",
+    "skill": "Handle unexpected questions",
+    "role": "primary",
+    "introduced_week": 48,
+    "suggested_prerequisite_relationship": "thinking time; repair"
+  },
+  {
+    "skill_id": "personal_story",
+    "skill": "Tell a personal story",
+    "role": "primary",
+    "introduced_week": 49,
+    "suggested_prerequisite_relationship": "sequencing; past"
+  },
+  {
+    "skill_id": "everyday_conversation",
+    "skill": "Handle a spontaneous everyday conversation",
+    "role": "primary",
+    "introduced_week": 50,
+    "suggested_prerequisite_relationship": "integrated review"
+  }
+]

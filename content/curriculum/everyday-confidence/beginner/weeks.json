@@ -1,0 +1,352 @@
+[
+  {
+    "week": 1,
+    "week_arc": "Me & My World",
+    "weekly_outcome": "Introduce Yourself: Give a simple 30–60 second introduction.",
+    "speaking_mission": "Give a 60-second self-introduction",
+    "primary_language_support": "name, country/city, work/study, interests, basic be"
+  },
+  {
+    "week": 2,
+    "week_arc": "Me & My World",
+    "weekly_outcome": "Talk About Where You Live: Describe where you live and what it is like.",
+    "speaking_mission": "Describe where you live for 60–90 seconds",
+    "primary_language_support": "there is/are, place vocabulary, basic adjectives, prepositions"
+  },
+  {
+    "week": 3,
+    "week_arc": "Me & My World",
+    "weekly_outcome": "Talk About Likes & Dislikes: Express preferences and ask others about theirs.",
+    "speaking_mission": "Talk about five likes and dislikes naturally",
+    "primary_language_support": "like/love/hate, do/don't, hobbies, preference questions"
+  },
+  {
+    "week": 4,
+    "week_arc": "Me & My World",
+    "weekly_outcome": "Describe Your Daily Routine: Describe a typical day in simple connected sentences.",
+    "speaking_mission": "Describe a typical day for 60–90 seconds",
+    "primary_language_support": "present simple, time, usually/sometimes/never, routine verbs"
+  },
+  {
+    "week": 5,
+    "week_arc": "Me & My World",
+    "weekly_outcome": "Talk About Your Family: Describe family members and relationships.",
+    "speaking_mission": "Describe your family for 1–2 minutes",
+    "primary_language_support": "have/has, possessives, family vocabulary, describing people"
+  },
+  {
+    "week": 6,
+    "week_arc": "Me & My World",
+    "weekly_outcome": "Talk About Your Home: Describe your home and where things are.",
+    "speaking_mission": "Describe your home for 1–2 minutes",
+    "primary_language_support": "there is/are, in/on/under/next to, rooms, objects"
+  },
+  {
+    "week": 7,
+    "week_arc": "Me & My World",
+    "weekly_outcome": "Talk About Friends: Talk about friends and what you do together.",
+    "speaking_mission": "Talk about a friend for 1–2 minutes",
+    "primary_language_support": "present simple, and/but, friendship vocabulary, activities"
+  },
+  {
+    "week": 8,
+    "week_arc": "Me & My World",
+    "weekly_outcome": "Talk About Feelings: Say how you feel and give a simple reason.",
+    "speaking_mission": "Describe how you feel and why",
+    "primary_language_support": "feel/am, because, emotion vocabulary, basic reasons"
+  },
+  {
+    "week": 9,
+    "week_arc": "Me & My World",
+    "weekly_outcome": "Express Wants & Needs: Say what you want or need in everyday situations.",
+    "speaking_mission": "Explain what you need in three everyday situations",
+    "primary_language_support": "want/need, would like, things/places, polite language"
+  },
+  {
+    "week": 10,
+    "week_arc": "Me & My World",
+    "weekly_outcome": "Ask for Help: Ask for help clearly and politely.",
+    "speaking_mission": "Ask for help naturally in an unfamiliar situation",
+    "primary_language_support": "can/could, please, help vocabulary, requests"
+  },
+  {
+    "week": 11,
+    "week_arc": "Everyday Interaction",
+    "weekly_outcome": "Offer Help: Offer help and respond naturally.",
+    "speaking_mission": "Offer, accept or decline help naturally",
+    "primary_language_support": "can I, would you like, accept/decline, service expressions"
+  },
+  {
+    "week": 12,
+    "week_arc": "Everyday Interaction",
+    "weekly_outcome": "Agree & Disagree: Show simple agreement or disagreement respectfully.",
+    "speaking_mission": "Express and explain one agreement and one disagreement",
+    "primary_language_support": "I agree, I don't think so, because, opinion words"
+  },
+  {
+    "week": 13,
+    "week_arc": "Everyday Interaction",
+    "weekly_outcome": "Ask for Clarification: Ask someone to repeat or explain something.",
+    "speaking_mission": "Handle a short conversation when you do not understand",
+    "primary_language_support": "sorry?, could you repeat, what do you mean, clarification"
+  },
+  {
+    "week": 14,
+    "week_arc": "Everyday Interaction",
+    "weekly_outcome": "Thank & Apologize: Thank people and apologize appropriately.",
+    "speaking_mission": "Handle a thank-you and apology conversation naturally",
+    "primary_language_support": "thank you, sorry, excuse me, responses"
+  },
+  {
+    "week": 15,
+    "week_arc": "Everyday Interaction",
+    "weekly_outcome": "Invite & Respond: Invite someone and accept or decline an invitation.",
+    "speaking_mission": "Invite someone and handle their response",
+    "primary_language_support": "would you like, let's, accept/decline, social plans"
+  },
+  {
+    "week": 16,
+    "week_arc": "Everyday Interaction",
+    "weekly_outcome": "Make Simple Plans: Talk about plans for the near future.",
+    "speaking_mission": "Describe your plans for the next week",
+    "primary_language_support": "going to, will, tomorrow/this weekend, plan verbs"
+  },
+  {
+    "week": 17,
+    "week_arc": "Everyday Interaction",
+    "weekly_outcome": "Talk About Time: Talk about schedules, times and simple appointments.",
+    "speaking_mission": "Arrange a simple appointment",
+    "primary_language_support": "at/on/in, days/dates, before/after, time expressions"
+  },
+  {
+    "week": 18,
+    "week_arc": "Everyday Interaction",
+    "weekly_outcome": "Talk About Food: Order food and talk about food preferences.",
+    "speaking_mission": "Talk about food and order a simple meal",
+    "primary_language_support": "I'd like, some/any, menu vocabulary, preferences"
+  },
+  {
+    "week": 19,
+    "week_arc": "Everyday Interaction",
+    "weekly_outcome": "At a Café: Handle a simple café interaction.",
+    "speaking_mission": "Complete a café interaction from start to finish",
+    "primary_language_support": "ordering, prices, quantities, polite requests"
+  },
+  {
+    "week": 20,
+    "week_arc": "Everyday Interaction",
+    "weekly_outcome": "Shopping: Ask about products, prices and choices.",
+    "speaking_mission": "Buy an item and handle a follow-up question",
+    "primary_language_support": "How much, this/that, sizes/colors, buying language"
+  },
+  {
+    "week": 21,
+    "week_arc": "Getting Things Done",
+    "weekly_outcome": "Ask for Directions: Ask for and understand simple directions.",
+    "speaking_mission": "Ask for and give directions naturally",
+    "primary_language_support": "where is, turn/go, left/right, landmarks"
+  },
+  {
+    "week": 22,
+    "week_arc": "Getting Things Done",
+    "weekly_outcome": "Talk About Transportation: Discuss how you travel and basic transport problems.",
+    "speaking_mission": "Explain your route and solve a small transport problem",
+    "primary_language_support": "take/go by, can/can't, transport vocabulary, time"
+  },
+  {
+    "week": 23,
+    "week_arc": "Getting Things Done",
+    "weekly_outcome": "At a Hotel: Handle basic hotel interactions.",
+    "speaking_mission": "Check in and solve a simple hotel problem",
+    "primary_language_support": "check in, need/want, room vocabulary, requests"
+  },
+  {
+    "week": 24,
+    "week_arc": "Getting Things Done",
+    "weekly_outcome": "Everyday Problems: Explain a simple problem and ask what to do.",
+    "speaking_mission": "Explain a real or imagined everyday problem",
+    "primary_language_support": "there is a problem, because, can't, solutions"
+  },
+  {
+    "week": 25,
+    "week_arc": "Getting Things Done",
+    "weekly_outcome": "Describe Past Events: Talk about something that happened recently.",
+    "speaking_mission": "Describe something that happened recently",
+    "primary_language_support": "past simple, yesterday/last, regular past verbs, sequence"
+  },
+  {
+    "week": 26,
+    "week_arc": "Getting Things Done",
+    "weekly_outcome": "Talk About Experiences: Talk about things you have done in simple terms.",
+    "speaking_mission": "Talk about three experiences naturally",
+    "primary_language_support": "ever/never, have + past participle, experience vocabulary"
+  },
+  {
+    "week": 27,
+    "week_arc": "Getting Things Done",
+    "weekly_outcome": "Tell a Short Story: Tell a short story with a clear sequence.",
+    "speaking_mission": "Tell a 90-second story with a clear sequence",
+    "primary_language_support": "first/then/after that/finally, past verbs, story verbs"
+  },
+  {
+    "week": 28,
+    "week_arc": "Getting Things Done",
+    "weekly_outcome": "Talk About Yesterday: Describe yesterday in connected speech.",
+    "speaking_mission": "Describe yesterday in 1–2 minutes",
+    "primary_language_support": "past simple, time sequence, routine vs past"
+  },
+  {
+    "week": 29,
+    "week_arc": "Getting Things Done",
+    "weekly_outcome": "Talk About Future Plans: Describe upcoming plans and intentions.",
+    "speaking_mission": "Describe your plans for the next month",
+    "primary_language_support": "going to/will, future time, plan verbs"
+  },
+  {
+    "week": 30,
+    "week_arc": "Getting Things Done",
+    "weekly_outcome": "Make Decisions: State a simple choice and explain why.",
+    "speaking_mission": "Make and explain a simple decision",
+    "primary_language_support": "I think, because, or, comparatives"
+  },
+  {
+    "week": 31,
+    "week_arc": "Opinions & Everyday Expression",
+    "weekly_outcome": "Give Simple Opinions: Give an opinion and one or two reasons.",
+    "speaking_mission": "Give your opinion with two reasons",
+    "primary_language_support": "I think, I prefer, because, opinion vocabulary"
+  },
+  {
+    "week": 32,
+    "week_arc": "Opinions & Everyday Expression",
+    "weekly_outcome": "Compare Things: Compare familiar people, places and things.",
+    "speaking_mission": "Compare two places, products or activities",
+    "primary_language_support": "bigger/more, than, both/but, comparison language"
+  },
+  {
+    "week": 33,
+    "week_arc": "Opinions & Everyday Expression",
+    "weekly_outcome": "Give Simple Advice: Give and respond to everyday advice.",
+    "speaking_mission": "Give three pieces of useful everyday advice",
+    "primary_language_support": "should, shouldn't, maybe, advice situations"
+  },
+  {
+    "week": 34,
+    "week_arc": "Opinions & Everyday Expression",
+    "weekly_outcome": "Talk About Health: Describe simple symptoms and ask for help.",
+    "speaking_mission": "Explain a simple health problem and ask for help",
+    "primary_language_support": "have/feel, body/health words, should, questions"
+  },
+  {
+    "week": 35,
+    "week_arc": "Opinions & Everyday Expression",
+    "weekly_outcome": "Talk About Weather: Describe weather and make simple plans around it.",
+    "speaking_mission": "Talk about weather and your plans",
+    "primary_language_support": "it's, present/future, weather vocabulary, because/so"
+  },
+  {
+    "week": 36,
+    "week_arc": "Opinions & Everyday Expression",
+    "weekly_outcome": "Talk About Hobbies: Talk about hobbies and ask follow-up questions.",
+    "speaking_mission": "Talk about a hobby for 2 minutes",
+    "primary_language_support": "like + -ing, how often, why, activity vocabulary"
+  },
+  {
+    "week": 37,
+    "week_arc": "Opinions & Everyday Expression",
+    "weekly_outcome": "Keep a Conversation Going: Use follow-up questions and short reactions.",
+    "speaking_mission": "Keep a conversation going for 5 minutes",
+    "primary_language_support": "really?, what about you?, why/how, conversation fillers"
+  },
+  {
+    "week": 38,
+    "week_arc": "Opinions & Everyday Expression",
+    "weekly_outcome": "Describe People: Describe someone's appearance and personality.",
+    "speaking_mission": "Describe a person for 1–2 minutes",
+    "primary_language_support": "be/have, adjectives, looks/personality, and/but"
+  },
+  {
+    "week": 39,
+    "week_arc": "Opinions & Everyday Expression",
+    "weekly_outcome": "Describe Places: Describe a familiar place and what you can do there.",
+    "speaking_mission": "Give a 2-minute description of a familiar place",
+    "primary_language_support": "there is/are, can, place adjectives, prepositions"
+  },
+  {
+    "week": 40,
+    "week_arc": "Opinions & Everyday Expression",
+    "weekly_outcome": "Talk About Memories: Share a simple memory and respond to someone else's.",
+    "speaking_mission": "Tell a 2-minute personal memory",
+    "primary_language_support": "past simple, when, because, memory vocabulary"
+  },
+  {
+    "week": 41,
+    "week_arc": "Conversation & Confidence",
+    "weekly_outcome": "Handle Small Talk: Start and maintain a short casual conversation.",
+    "speaking_mission": "Have a 5-minute small-talk conversation",
+    "primary_language_support": "greetings, small talk questions, responses, topic shifts"
+  },
+  {
+    "week": 42,
+    "week_arc": "Conversation & Confidence",
+    "weekly_outcome": "Handle Everyday Phone/Chat English: Communicate simple information by phone or chat.",
+    "speaking_mission": "Complete a realistic phone or chat interaction",
+    "primary_language_support": "can/could, short messages, confirming, asking questions"
+  },
+  {
+    "week": 43,
+    "week_arc": "Conversation & Confidence",
+    "weekly_outcome": "Solve a Small Problem: Explain a problem, ask for help and respond to a solution.",
+    "speaking_mission": "Explain and resolve a small everyday problem",
+    "primary_language_support": "problem/solution, because/so, could, follow-ups"
+  },
+  {
+    "week": 44,
+    "week_arc": "Conversation & Confidence",
+    "weekly_outcome": "Talk About Goals & Dreams: Talk about personal goals and simple reasons.",
+    "speaking_mission": "Talk about your goals for 2 minutes",
+    "primary_language_support": "want to, hope to, would like to, future vocabulary"
+  },
+  {
+    "week": 45,
+    "week_arc": "Conversation & Confidence",
+    "weekly_outcome": "Talk About Change: Describe how something is different now.",
+    "speaking_mission": "Describe a meaningful change in your life",
+    "primary_language_support": "used to/basic contrast, now/before, comparatives, change vocabulary"
+  },
+  {
+    "week": 46,
+    "week_arc": "Conversation & Confidence",
+    "weekly_outcome": "Express Preferences in Conversation: Discuss choices and respond to different preferences.",
+    "speaking_mission": "Discuss a preference and reach a shared choice",
+    "primary_language_support": "prefer, rather, because, agreement/disagreement"
+  },
+  {
+    "week": 47,
+    "week_arc": "Conversation & Confidence",
+    "weekly_outcome": "Have a 5-Minute Everyday Conversation: Sustain a conversation across several familiar topics.",
+    "speaking_mission": "Hold a 5-minute everyday conversation",
+    "primary_language_support": "follow-ups, topic changes, reactions, repair strategies"
+  },
+  {
+    "week": 48,
+    "week_arc": "Conversation & Confidence",
+    "weekly_outcome": "Handle an Unexpected Question: Respond to simple questions without a script.",
+    "speaking_mission": "Respond to five spontaneous everyday questions",
+    "primary_language_support": "thinking time, clarification, because, spontaneous speaking"
+  },
+  {
+    "week": 49,
+    "week_arc": "Conversation & Confidence",
+    "weekly_outcome": "Tell a Personal Story: Tell a 2–3 minute personal story with a clear beginning, middle and end.",
+    "speaking_mission": "Tell a 2–3 minute personal story",
+    "primary_language_support": "story sequencing, past verbs, feelings, details"
+  },
+  {
+    "week": 50,
+    "week_arc": "Conversation & Confidence",
+    "weekly_outcome": "Everyday Confidence Mission: Handle a spontaneous everyday conversation with confidence.",
+    "speaking_mission": "Final Beginner Mission: handle a spontaneous everyday conversation",
+    "primary_language_support": "integrated review, fluency, repair, conversation strategies"
+  }
+]

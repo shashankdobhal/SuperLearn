@@ -1,0 +1,37 @@
+[
+  {
+    "dimension": "Fluency",
+    "what_supernova_evaluates": "Pauses, continuity, ability to keep speaking",
+    "beginner_target_by_week_50": "Can speak in connected short stretches on familiar topics; pauses do not stop communication."
+  },
+  {
+    "dimension": "Grammar",
+    "what_supernova_evaluates": "Accuracy and control of taught structures",
+    "beginner_target_by_week_50": "Can use core everyday structures accurately enough to communicate; errors remain but rarely block meaning."
+  },
+  {
+    "dimension": "Vocabulary",
+    "what_supernova_evaluates": "Range and retrieval of everyday words/phrases",
+    "beginner_target_by_week_50": "Can retrieve practical everyday vocabulary and paraphrase when a word is missing."
+  },
+  {
+    "dimension": "Pronunciation",
+    "what_supernova_evaluates": "Clarity, stress, common sound errors",
+    "beginner_target_by_week_50": "Generally understandable to a patient listener; can improve recurring pronunciation issues."
+  },
+  {
+    "dimension": "Comprehensibility",
+    "what_supernova_evaluates": "How easily a listener understands the message",
+    "beginner_target_by_week_50": "Message is understandable in familiar everyday contexts."
+  },
+  {
+    "dimension": "Interaction",
+    "what_supernova_evaluates": "Answers, follow-ups, clarification, repair",
+    "beginner_target_by_week_50": "Can answer basic follow-ups, ask questions, clarify and keep a simple conversation going."
+  },
+  {
+    "dimension": "Spontaneity",
+    "what_supernova_evaluates": "Ability to respond without a script",
+    "beginner_target_by_week_50": "Can respond to familiar and some unexpected questions without relying entirely on memorized sentences."
+  }
+]

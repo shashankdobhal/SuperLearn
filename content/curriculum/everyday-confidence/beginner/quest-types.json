@@ -1,0 +1,82 @@
+[
+  {
+    "quest_type": "Learn",
+    "purpose": "Introduce or clarify the language needed for today's speaking outcome.",
+    "typical_task_count": "5",
+    "example_task_mix": "Notice → rule → examples → quick check → say it",
+    "speaking_role": "Immediate short production",
+    "repeat_track_behaviour": "Retry missed concept with a new example"
+  },
+  {
+    "quest_type": "Translation",
+    "purpose": "Bridge the learner's support language into usable English.",
+    "typical_task_count": "6",
+    "example_task_mix": "Translate → compare → improve → say aloud → new line → speak",
+    "speaking_role": "Every translated line should lead toward oral production",
+    "repeat_track_behaviour": "Generate a parallel sentence with the same skill"
+  },
+  {
+    "quest_type": "Listening",
+    "purpose": "Build comprehension of natural spoken English.",
+    "typical_task_count": "5",
+    "example_task_mix": "Listen → identify → meaning → response → repeat/retell",
+    "speaking_role": "Respond orally where appropriate",
+    "repeat_track_behaviour": "Replay with a new but equivalent audio item"
+  },
+  {
+    "quest_type": "Reading",
+    "purpose": "Expose the learner to useful written models and dialogue.",
+    "typical_task_count": "5",
+    "example_task_mix": "Read → notice → meaning → choose response → speak",
+    "speaking_role": "Convert reading into spoken response",
+    "repeat_track_behaviour": "New text testing the same target"
+  },
+  {
+    "quest_type": "Writing",
+    "purpose": "Help formulate accurate English before speaking.",
+    "typical_task_count": "5",
+    "example_task_mix": "Build → complete → write → improve → say aloud",
+    "speaking_role": "Read own answer aloud / convert to speech",
+    "repeat_track_behaviour": "New prompt testing same formulation"
+  },
+  {
+    "quest_type": "Practice",
+    "purpose": "Controlled rehearsal before freer speaking.",
+    "typical_task_count": "6",
+    "example_task_mix": "Choice → completion → transformation → translation → guided speech",
+    "speaking_role": "Progress from controlled to independent",
+    "repeat_track_behaviour": "Parallel item with reduced scaffolding"
+  },
+  {
+    "quest_type": "Speaking",
+    "purpose": "Produce language independently.",
+    "typical_task_count": "5",
+    "example_task_mix": "Guided → semi-guided → free → feedback → retry",
+    "speaking_role": "Primary output",
+    "repeat_track_behaviour": "New prompt targeting the same skill"
+  },
+  {
+    "quest_type": "Conversation",
+    "purpose": "Use language dynamically with Nova.",
+    "typical_task_count": "6",
+    "example_task_mix": "Roleplay → response → follow-up → repair → unexpected question → feedback",
+    "speaking_role": "Primary interaction",
+    "repeat_track_behaviour": "New scenario with same communication objective"
+  },
+  {
+    "quest_type": "Review",
+    "purpose": "Retrieve older material for muscle memory.",
+    "typical_task_count": "5",
+    "example_task_mix": "Recall → use → contrast → speak → quick check",
+    "speaking_role": "Speaking retrieval preferred",
+    "repeat_track_behaviour": "Reschedule if still weak"
+  },
+  {
+    "quest_type": "Mission",
+    "purpose": "Demonstrate the weekly outcome in a realistic situation.",
+    "typical_task_count": "5",
+    "example_task_mix": "Scenario → preparation → spontaneous speaking → follow-up → assessment",
+    "speaking_role": "Highest speaking weight",
+    "repeat_track_behaviour": "Retry mission with a new scenario after remediation"
+  }
+]
