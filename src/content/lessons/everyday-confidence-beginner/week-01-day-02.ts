@@ -77,18 +77,21 @@ export const week01Day02: DayLesson = {
   speakFlow: [
     {
       id: 'speak-live',
+      quest: 2,
       promptEn: 'Say where you live.',
       promptHi: 'बताइए आप कहाँ रहते हैं।',
       hint: { pattern: 'I live in + [Place]', example: 'I live in Pune.' },
     },
     {
       id: 'speak-do',
+      quest: 2,
       promptEn: 'Now say what you do — your work or your studies.',
       promptHi: 'अब बताइए आप क्या करते हैं — काम या पढ़ाई।',
       hint: { pattern: 'I work as a / I study + [subject]', example: 'I study Computer Science.' },
     },
     {
       id: 'speak-combine',
+      quest: 2,
       promptEn: 'Say where you live and what you do in one sentence.',
       promptHi: 'एक ही sentence में बताइए आप कहाँ रहते हैं और क्या करते हैं।',
       hint: {
@@ -98,6 +101,7 @@ export const week01Day02: DayLesson = {
     },
     {
       id: 'speak-again',
+      quest: 2,
       promptEn: 'Try again, a little faster this time — where you live and what you do.',
       promptHi: 'फिर से बोलिए, इस बार थोड़ा तेज़ — कहाँ रहते हैं और क्या करते हैं।',
       hint: {
@@ -107,6 +111,7 @@ export const week01Day02: DayLesson = {
     },
     {
       id: 'speak-final',
+      quest: 2,
       promptEn: 'Last one — tell me where you live and what you do, as if you just met someone new.',
       promptHi: 'आखिरी सवाल — बताइए आप कहाँ रहते हैं और क्या करते हैं, जैसे आप किसी नए व्यक्ति से मिले हों।',
       isFinal: true,

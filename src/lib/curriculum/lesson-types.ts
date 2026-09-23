@@ -74,10 +74,14 @@ export type LearnFlowStep = IntroStep | RuleStep | McqStep | BuildStep;
 
 export interface SpeakStep {
   id: string;
+  quest: number;
   promptEn: string;
   promptHi: string;
   hint?: LanguageHint;
   isFinal?: boolean;
+  /** Overrides the "Last Question!" header on the final step — used for a
+   * day-7-style weekly mission capstone (see week-01-day-07.ts). */
+  missionLabel?: string;
 }
 
 export interface DayLesson {

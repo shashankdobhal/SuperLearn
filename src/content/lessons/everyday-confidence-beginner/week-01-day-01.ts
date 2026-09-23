@@ -107,30 +107,35 @@ export const week01Day01: DayLesson = {
   speakFlow: [
     {
       id: 'speak-name',
+      quest: 3,
       promptEn: 'Say your name.',
       promptHi: 'अपना नाम बोलिए।',
       hint: { pattern: 'My name is + [Name]', example: 'My name is Aisha.' },
     },
     {
       id: 'speak-from',
+      quest: 3,
       promptEn: "Now say where you're from.",
       promptHi: 'अब बताइए आप कहाँ से हैं।',
       hint: { pattern: 'I am from + [Place]', example: 'I am from Delhi.' },
     },
     {
       id: 'speak-work',
+      quest: 3,
       promptEn: 'Say what you do — your work or study.',
       promptHi: 'बताइए आप क्या करते हैं — काम या पढ़ाई।',
       hint: { pattern: 'I work as a / I study + [subject]', example: 'I work as a teacher.' },
     },
     {
       id: 'speak-interest',
+      quest: 3,
       promptEn: "Share one thing you're interested in.",
       promptHi: 'एक चीज़ बताइए जिसमें आपकी रुचि है।',
       hint: { pattern: 'I like / I am interested in + [noun / verb-ing]', example: 'I like reading books.' },
     },
     {
       id: 'speak-full',
+      quest: 3,
       promptEn:
         'Last one — put it all together. Give a full introduction: your name, where you’re from, what you do, and one interest.',
       promptHi: 'आखिरी सवाल — सब कुछ मिलाकर बोलिए: आपका नाम, आप कहाँ से हैं, आप क्या करते हैं, और आपकी एक रुचि।',

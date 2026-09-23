@@ -31,18 +31,19 @@ export interface TranslationRow {
 }
 
 /**
- * Each learnFlow step carries an explicit `quest` (1-based, matching
- * days.json's quest_N ordering) — earlier versions of this file inferred it
- * from task_type (build ⇒ quest 2, everything else ⇒ quest 1), which broke
- * as soon as a day reused a task_type across two different quests (Day 3's
- * "Listen & Notice" quest reuses 'mcq'/'build' for identify/meaning/retell
- * checks — see week-01-day-03.ts). speakFlow is always the day's last quest.
+ * Every step — learnFlow and speakFlow alike — carries an explicit `quest`
+ * (1-based, matching days.json's quest_N ordering). Earlier versions
+ * inferred learnFlow's quest from task_type (build ⇒ quest 2, everything
+ * else ⇒ quest 1) and gave every speakFlow step the same single "last
+ * quest" index — both broke once a day needed more than the original
+ * Learn(+Translate)/Speak two-quest shape (Day 3's "Listen & Notice" quest
+ * reuses 'mcq'/'build'; Day 7 has four quests, three of them speak-shaped —
+ * see week-01-day-0{3,7}.ts).
  */
 export function lessonToRows(lesson: DayLesson): { items: ContentItemRow[]; translations: TranslationRow[] } {
   const items: ContentItemRow[] = [];
   const translations: TranslationRow[] = [];
 
-  const speakQuestIndex = Math.max(0, ...lesson.learnFlow.map((s) => s.quest)) + 1;
   const taskIndexByQuest = new Map<number, number>();
   const nextTaskIndex = (quest: number) => {
     const i = taskIndexByQuest.get(quest) ?? 0;
@@ -70,28 +71,23 @@ export function lessonToRows(lesson: DayLesson): { items: ContentItemRow[]; tran
     }
   }
 
-  lesson.speakFlow.forEach((step, taskIndex) => {
+  for (const step of lesson.speakFlow) {
+    const questIndex = step.quest;
+    const taskIndex = nextTaskIndex(questIndex);
     const { payload, fields } = splitSpeakStep(step);
     items.push({
       week: lesson.week,
       day: lesson.day,
-      questIndex: speakQuestIndex,
+      questIndex,
       taskIndex,
       taskType: 'speak',
       skillId: lesson.skillId,
       payload,
     });
     for (const [locale, localeFields] of Object.entries(fields)) {
-      translations.push({
-        week: lesson.week,
-        day: lesson.day,
-        questIndex: speakQuestIndex,
-        taskIndex,
-        locale,
-        fields: localeFields,
-      });
+      translations.push({ week: lesson.week, day: lesson.day, questIndex, taskIndex, locale, fields: localeFields });
     }
-  });
+  }
 
   return { items, translations };
 }
@@ -158,7 +154,7 @@ function splitBuild(step: BuildStep) {
 
 function splitSpeakStep(step: SpeakStep) {
   return {
-    payload: { hint: step.hint ?? null, isFinal: step.isFinal ?? false },
+    payload: { hint: step.hint ?? null, isFinal: step.isFinal ?? false, missionLabel: step.missionLabel ?? null },
     fields: {
       en: { prompt: step.promptEn },
       hi: { prompt: step.promptHi },

@@ -16,11 +16,16 @@ import { Client } from 'pg';
 import skillsData from '../../content/curriculum/everyday-confidence/beginner/skills.json';
 import { week01Day01 } from '../../src/content/lessons/everyday-confidence-beginner/week-01-day-01';
 import { week01Day02 } from '../../src/content/lessons/everyday-confidence-beginner/week-01-day-02';
+import { week01Day03 } from '../../src/content/lessons/everyday-confidence-beginner/week-01-day-03';
+import { week01Day04 } from '../../src/content/lessons/everyday-confidence-beginner/week-01-day-04';
+import { week01Day05 } from '../../src/content/lessons/everyday-confidence-beginner/week-01-day-05';
+import { week01Day06 } from '../../src/content/lessons/everyday-confidence-beginner/week-01-day-06';
+import { week01Day07 } from '../../src/content/lessons/everyday-confidence-beginner/week-01-day-07';
 import { lessonToRows } from './lib/toRows';
 
 const DATABASE_URL = process.env.DATABASE_URL ?? 'postgres://localhost/supernova_dev';
 
-const LESSONS = [week01Day01, week01Day02];
+const LESSONS = [week01Day01, week01Day02, week01Day03, week01Day04, week01Day05, week01Day06, week01Day07];
 
 async function main() {
   const client = new Client({ connectionString: DATABASE_URL });

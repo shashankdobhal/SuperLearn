@@ -51,7 +51,7 @@ export function SpeakCard({
   }, []);
 
   const isLast = index === total - 1;
-  const headerLabel = isLast ? 'Last Question!' : `${total - index} Questions Remaining`;
+  const headerLabel = isLast ? (step.missionLabel ?? 'Last Question!') : `${total - index} Questions Remaining`;
   const subtitle =
     index === 0
       ? "Ready to start? Let's begin the fun!"

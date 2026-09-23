@@ -232,16 +232,21 @@ process to set up, not a bug fix.
    etc. aren't in `content_translations` — a fully multi-language *UI*
    (Home screen included, not just lessons) would need that too.
 4. **No review workflow** for `machine` → `machine_reviewed`, per above.
-5. **Only Week 1 / Days 1–2 have authored lesson content** — the blueprint
-   row exists for all 350 days (so Home correctly shows Day 3's real
-   `daily_mini_outcome`, "Talk about one interest," as locked/"Soon"), but
-   `content_items` only has actual tasks for Days 1–2. Day 3 specifically
-   introduces a "Listen & Notice" quest (`quest_2_type: 'listening'` in
-   `days.json`) that Days 1–2 didn't need — `lesson-types.ts`'s
-   `IntroStep`/`McqStep`/`BuildStep` gained an optional `audioTextEn` (with
-   a `PlayAudioButton` in the matching cards) so a listening check can reuse
-   those task types rather than needing a whole new one, and every
-   learnFlow step now carries an explicit `quest: number` instead of it
-   being inferred from `task_type` (inferring broke as soon as a quest
-   needed to reuse a task_type another quest also uses). Day 3's actual
-   content isn't written yet.
+5. **Week 1 (Days 1–7) has authored lesson content; Weeks 2–50 don't yet.**
+   The blueprint row exists for all 350 days (so Home correctly shows every
+   day's real `daily_mini_outcome` as locked/"Soon" once its content_items
+   don't exist), but `content_items` only covers Week 1. Days 3–7 introduced
+   quest types Days 1–2 didn't need — "Listen & Notice" (`listening`),
+   "Talk with Nova" (`conversation`), "Build It in Writing" (`writing`),
+   "Warm-up" (`practice`) and "Weekly Mission" (`mission`) — all reused via
+   the existing `intro`/`rule`/`mcq`/`build`/`speak` task types rather than
+   new ones (see week-01-day-0{3,4,5,6,7}.ts's comments for how each maps),
+   which needed two schema fixes: every step now carries an explicit
+   `quest: number` (was inferred from `task_type`, which broke once a quest
+   reused a type another quest also used), and `intro`/`mcq`/`build`/`speak`
+   gained an optional `audioTextEn` (+ `PlayAudioButton`, `expo-speech`) for
+   listening checks, plus `speak` gained an optional `missionLabel` for Day
+   7's capstone. Days 1, 2, 3 and 7 were click-tested end to end in the
+   browser (including the "WEEKLY MISSION" label and a real completion
+   report); Days 4–6 were verified via the API response shape and
+   typecheck/lint only, not a full interactive run-through.

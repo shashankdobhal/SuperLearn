@@ -97,10 +97,12 @@ export async function getDayLesson(week: number, day: number) {
       case 'speak':
         return {
           id: item.id,
+          quest: item.quest_index,
           promptEn: en?.prompt ?? '',
           promptHi: hi?.prompt ?? '',
           hint: p.hint ?? undefined,
           isFinal: p.isFinal ?? false,
+          missionLabel: p.missionLabel ?? undefined,
         };
     }
   };
