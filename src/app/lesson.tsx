@@ -33,6 +33,7 @@ export default function LessonScreen() {
   // DayLesson = loaded. See src/lib/api/lessons.ts / server/lessons.ts.
   const [dayLesson, setDayLesson] = useState<DayLesson | null | undefined>(undefined);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [retryTick, setRetryTick] = useState(0);
   const skill = dayLesson ? getSkill(dayLesson.skillId) : undefined;
   const dailyOutcome = dayLesson?.dailyOutcome ?? '';
 
@@ -59,7 +60,10 @@ export default function LessonScreen() {
     let cancelled = false;
     fetchDayLesson(week, day)
       .then((lesson) => {
-        if (!cancelled) setDayLesson(lesson);
+        if (!cancelled) {
+          setDayLesson(lesson);
+          setLoadError(null);
+        }
       })
       .catch((err) => {
         if (!cancelled) setLoadError(err instanceof Error ? err.message : 'Failed to load lesson');
@@ -67,7 +71,15 @@ export default function LessonScreen() {
     return () => {
       cancelled = true;
     };
-  }, [week, day]);
+  }, [week, day, retryTick]);
+
+  // Auto-retry every few seconds on a load error (e.g. the local API server
+  // or Postgres was mid-restart) rather than staying stuck until reload.
+  useEffect(() => {
+    if (!loadError) return;
+    const id = setInterval(() => setRetryTick((t) => t + 1), 4000);
+    return () => clearInterval(id);
+  }, [loadError]);
 
   function recordResult({ correct, wordsUsed: w, mistake }: GradedResult) {
     setTotalGraded((t) => t + 1);
@@ -98,9 +110,14 @@ export default function LessonScreen() {
             {'\n\n'}
             Is the local API running? Start it with{' '}
             <Text style={styles.emptyCode}>npm run server</Text> (needs Postgres running too — see
-            docs/CONTENT_DATABASE.md).
+            docs/CONTENT_DATABASE.md). Retrying automatically…
           </Text>
-          <PrimaryButton label="BACK" onPress={() => router.back()} style={styles.emptyButton} />
+          <PrimaryButton
+            label="RETRY NOW"
+            onPress={() => setRetryTick((t) => t + 1)}
+            style={styles.emptyButton}
+          />
+          <PrimaryButton label="BACK" variant="ghost" onPress={() => router.back()} />
         </View>
       </SafeAreaView>
     );

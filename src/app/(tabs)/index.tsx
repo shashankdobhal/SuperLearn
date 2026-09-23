@@ -20,6 +20,9 @@ export default function HomeScreen() {
   // avoid a flash of "unlocked" before we actually know).
   const [availableDays, setAvailableDays] = useState<number[] | null>(null);
   const [serverUnreachable, setServerUnreachable] = useState(false);
+  // Bumping this re-runs the fetch effect below — used both for the manual
+  // Retry button and for automatic retries while unreachable.
+  const [retryTick, setRetryTick] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -28,6 +31,7 @@ export default function HomeScreen() {
         if (cancelled) return;
         setWeek(weekRow);
         setDaysInWeek(days);
+        setServerUnreachable(false);
       })
       .catch(() => {
         if (!cancelled) {
@@ -37,7 +41,10 @@ export default function HomeScreen() {
       });
     fetchAvailableDays(CURRENT_WEEK)
       .then((days) => {
-        if (!cancelled) setAvailableDays(days);
+        if (!cancelled) {
+          setAvailableDays(days);
+          setServerUnreachable(false);
+        }
       })
       .catch(() => {
         if (!cancelled) {
@@ -48,7 +55,16 @@ export default function HomeScreen() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [retryTick]);
+
+  // Auto-retry every few seconds while unreachable (e.g. the local API
+  // server or Postgres was mid-restart) — no manual reload should be
+  // needed for the app to notice it's back.
+  useEffect(() => {
+    if (!serverUnreachable) return;
+    const id = setInterval(() => setRetryTick((t) => t + 1), 4000);
+    return () => clearInterval(id);
+  }, [serverUnreachable]);
 
   const today = daysInWeek[0];
 
@@ -65,7 +81,11 @@ export default function HomeScreen() {
             <Ionicons name="warning" size={16} color={Colors.warning} />
             <Text style={styles.warningText}>
               Can&apos;t reach the lesson server — run `npm run server` (and Postgres) to load the curriculum.
+              Retrying automatically…
             </Text>
+            <Pressable onPress={() => setRetryTick((t) => t + 1)} style={styles.retryButton}>
+              <Text style={styles.retryButtonText}>Retry</Text>
+            </Pressable>
           </View>
         )}
 
@@ -187,6 +207,18 @@ const styles = StyleSheet.create({
     color: Colors.warning,
     fontSize: 12,
     flex: 1,
+  },
+  retryButton: {
+    borderWidth: 1,
+    borderColor: Colors.warning,
+    borderRadius: Radii.sm,
+    paddingVertical: Space.xs,
+    paddingHorizontal: Space.md,
+  },
+  retryButtonText: {
+    color: Colors.warning,
+    fontSize: 12,
+    fontWeight: '800',
   },
   loadingIndicator: {
     marginTop: Space.xxl,
