@@ -1,6 +1,8 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, type StyleProp, type ViewStyle } from 'react-native';
 
-import { Colors, Radii, Space } from '@/constants/palette';
+import { Radii, Space, Typography } from '@/constants/theme';
+import { useTheme } from '@/lib/theme/ThemeProvider';
 
 interface PrimaryButtonProps {
   label: string;
@@ -11,6 +13,8 @@ interface PrimaryButtonProps {
 }
 
 export function PrimaryButton({ label, onPress, variant = 'primary', disabled, style }: PrimaryButtonProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const isGhost = variant === 'ghost';
   return (
     <Pressable
@@ -18,11 +22,11 @@ export function PrimaryButton({ label, onPress, variant = 'primary', disabled, s
       disabled={disabled}
       style={({ pressed }) => [
         styles.base,
-        variant === 'primary' && { backgroundColor: Colors.primary },
-        variant === 'success' && { backgroundColor: Colors.success },
+        variant === 'primary' && { backgroundColor: pressed && !disabled ? colors.brandOrangeActive : colors.brandOrange },
+        variant === 'success' && { backgroundColor: colors.healthy },
         isGhost && styles.ghost,
         disabled && styles.disabled,
-        pressed && !disabled && styles.pressed,
+        pressed && !disabled && variant !== 'primary' && styles.pressed,
         style,
       ]}>
       <Text style={[styles.label, isGhost && styles.ghostLabel]}>{label}</Text>
@@ -30,30 +34,33 @@ export function PrimaryButton({ label, onPress, variant = 'primary', disabled, s
   );
 }
 
-const styles = StyleSheet.create({
-  base: {
-    borderRadius: Radii.md,
-    paddingVertical: Space.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  ghost: {
-    backgroundColor: 'transparent',
-  },
-  disabled: {
-    opacity: 0.4,
-  },
-  pressed: {
-    opacity: 0.85,
-  },
-  label: {
-    color: '#0A0B14',
-    fontSize: 16,
-    fontWeight: '800',
-    letterSpacing: 0.5,
-  },
-  ghostLabel: {
-    color: Colors.textSecondary,
-    fontWeight: '600',
-  },
-});
+function createStyles(colors: ReturnType<typeof useTheme>['colors']) {
+  return StyleSheet.create({
+    base: {
+      borderRadius: Radii.md,
+      paddingVertical: Space.lg,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    ghost: {
+      backgroundColor: 'transparent',
+    },
+    disabled: {
+      opacity: 0.4,
+    },
+    pressed: {
+      opacity: 0.85,
+    },
+    label: {
+      color: '#FFFFFF',
+      fontSize: 16,
+      fontFamily: Typography.fontFamilyMedium,
+      fontWeight: '700',
+      letterSpacing: 0.3,
+    },
+    ghostLabel: {
+      color: colors.muted,
+      fontWeight: '600',
+    },
+  });
+}

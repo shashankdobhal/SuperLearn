@@ -11,7 +11,8 @@ import { SpeakCard } from '@/components/supernova/lesson/SpeakCard';
 import { LanguageToggle, type SupportLanguage } from '@/components/supernova/LanguageToggle';
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
 import { ProgressHeader } from '@/components/supernova/ProgressHeader';
-import { Colors, Radii, Space } from '@/constants/palette';
+import { Radii, Space } from '@/constants/theme';
+import { useTheme } from '@/lib/theme/ThemeProvider';
 import { fetchDayLesson } from '@/lib/api/lessons';
 import { getSkill } from '@/lib/curriculum/data';
 import type { DayLesson } from '@/lib/curriculum/lesson-types';
@@ -25,6 +26,8 @@ interface GradedResult {
 }
 
 export default function LessonScreen() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const params = useLocalSearchParams<{ week?: string; day?: string }>();
   const week = Number(params.week ?? 1) || 1;
   const day = Number(params.day ?? 1) || 1;
@@ -128,7 +131,7 @@ export default function LessonScreen() {
     return (
       <SafeAreaView style={styles.safe}>
         <View style={styles.emptyState}>
-          <ActivityIndicator color={Colors.primary} />
+          <ActivityIndicator color={colors.brandOrange} />
         </View>
       </SafeAreaView>
     );
@@ -300,131 +303,133 @@ export default function LessonScreen() {
   }
 }
 
-const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: Colors.bg,
-  },
-  content: {
-    padding: Space.lg,
-    paddingBottom: Space.xxl,
-  },
-  langToggleWrap: {
-    paddingVertical: Space.sm,
-  },
-  emptyState: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: Space.xl,
-    gap: Space.lg,
-  },
-  emptyTitle: {
-    color: Colors.text,
-    fontSize: 20,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  emptyBody: {
-    color: Colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  emptyCode: {
-    fontFamily: 'monospace',
-    color: Colors.primary,
-  },
-  emptyButton: {
-    alignSelf: 'stretch',
-  },
-  transitionWrap: {
-    alignItems: 'center',
-    gap: Space.lg,
-    paddingTop: Space.xl,
-  },
-  novaAvatarLarge: {
-    width: 88,
-    height: 88,
-    borderRadius: Radii.pill,
-    backgroundColor: Colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  novaAvatarLargeText: {
-    color: '#fff',
-    fontSize: 32,
-    fontWeight: '800',
-  },
-  transitionBubble: {
-    backgroundColor: Colors.bgCard,
-    borderRadius: Radii.md,
-    padding: Space.lg,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-  },
-  transitionBubbleText: {
-    color: Colors.success,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  transitionCard: {
-    alignSelf: 'stretch',
-    marginTop: Space.xl,
-    gap: Space.md,
-  },
-  transitionTitle: {
-    color: Colors.text,
-    fontSize: 20,
-    fontWeight: '800',
-  },
-  transitionSubtitle: {
-    color: Colors.textSecondary,
-    marginBottom: Space.lg,
-  },
-  pathRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Space.sm,
-    marginBottom: Space.xl,
-  },
-  pathNode: {
-    alignItems: 'center',
-    gap: Space.xs,
-  },
-  pathCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: Radii.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 3,
-    borderColor: Colors.cardBorder,
-  },
-  pathCircleDone: {
-    backgroundColor: Colors.success,
-    borderColor: Colors.success,
-  },
-  pathCircleActive: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primaryMuted,
-  },
-  pathCircleText: {
-    color: '#0A0B14',
-    fontWeight: '800',
-    fontSize: 20,
-  },
-  pathLabel: {
-    color: Colors.textSecondary,
-    fontSize: 13,
-  },
-  pathConnector: {
-    width: 40,
-    height: 2,
-    backgroundColor: Colors.cardBorder,
-    marginBottom: 20,
-  },
-  transitionStart: {
-    marginTop: Space.sm,
-  },
-});
+function createStyles(colors: ReturnType<typeof useTheme>['colors']) {
+  return StyleSheet.create({
+    safe: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    content: {
+      padding: Space.lg,
+      paddingBottom: Space.xxl,
+    },
+    langToggleWrap: {
+      paddingVertical: Space.sm,
+    },
+    emptyState: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: Space.xl,
+      gap: Space.lg,
+    },
+    emptyTitle: {
+      color: colors.graphite,
+      fontSize: 20,
+      fontWeight: '800',
+      textAlign: 'center',
+    },
+    emptyBody: {
+      color: colors.muted,
+      textAlign: 'center',
+      lineHeight: 22,
+    },
+    emptyCode: {
+      fontFamily: 'monospace',
+      color: colors.brandOrange,
+    },
+    emptyButton: {
+      alignSelf: 'stretch',
+    },
+    transitionWrap: {
+      alignItems: 'center',
+      gap: Space.lg,
+      paddingTop: Space.xl,
+    },
+    novaAvatarLarge: {
+      width: 88,
+      height: 88,
+      borderRadius: Radii.pill,
+      backgroundColor: colors.brandOrange,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    novaAvatarLargeText: {
+      color: '#FFFFFF',
+      fontSize: 32,
+      fontWeight: '800',
+    },
+    transitionBubble: {
+      backgroundColor: colors.card,
+      borderRadius: Radii.md,
+      padding: Space.lg,
+      borderWidth: 1,
+      borderColor: colors.cardBorder,
+    },
+    transitionBubbleText: {
+      color: colors.healthy,
+      fontWeight: '700',
+      textAlign: 'center',
+    },
+    transitionCard: {
+      alignSelf: 'stretch',
+      marginTop: Space.xl,
+      gap: Space.md,
+    },
+    transitionTitle: {
+      color: colors.graphite,
+      fontSize: 20,
+      fontWeight: '800',
+    },
+    transitionSubtitle: {
+      color: colors.muted,
+      marginBottom: Space.lg,
+    },
+    pathRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: Space.sm,
+      marginBottom: Space.xl,
+    },
+    pathNode: {
+      alignItems: 'center',
+      gap: Space.xs,
+    },
+    pathCircle: {
+      width: 56,
+      height: 56,
+      borderRadius: Radii.pill,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 3,
+      borderColor: colors.cardBorder,
+    },
+    pathCircleDone: {
+      backgroundColor: colors.healthy,
+      borderColor: colors.healthy,
+    },
+    pathCircleActive: {
+      borderColor: colors.brandOrange,
+      backgroundColor: colors.brandOrangeMuted,
+    },
+    pathCircleText: {
+      color: '#FFFFFF',
+      fontWeight: '800',
+      fontSize: 20,
+    },
+    pathLabel: {
+      color: colors.muted,
+      fontSize: 13,
+    },
+    pathConnector: {
+      width: 40,
+      height: 2,
+      backgroundColor: colors.cardBorder,
+      marginBottom: 20,
+    },
+    transitionStart: {
+      marginTop: Space.sm,
+    },
+  });
+}

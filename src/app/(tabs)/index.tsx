@@ -1,10 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
-import { Colors, Radii, Space } from '@/constants/palette';
+import { Radii, Space } from '@/constants/theme';
+import { useTheme } from '@/lib/theme/ThemeProvider';
 import { fetchDaysForWeek, fetchWeek, type DayRow as DayData, type WeekRow } from '@/lib/api/curriculum';
 import { fetchAvailableDays } from '@/lib/api/lessons';
 import { questTypeIcon } from '@/lib/curriculum/questIcons';
@@ -13,6 +14,8 @@ import type { QuestType } from '@/lib/curriculum/types';
 const CURRENT_WEEK = 1;
 
 export default function HomeScreen() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   // undefined = still loading, null = the API/Postgres couldn't be reached.
   const [week, setWeek] = useState<WeekRow | null | undefined>(undefined);
   const [daysInWeek, setDaysInWeek] = useState<DayData[]>([]);
@@ -78,7 +81,7 @@ export default function HomeScreen() {
 
         {serverUnreachable && (
           <View style={styles.warningBanner}>
-            <Ionicons name="warning" size={16} color={Colors.warning} />
+            <Ionicons name="warning" size={16} color={colors.attention} />
             <Text style={styles.warningText}>
               Can&apos;t reach the lesson server — run `npm run server` (and Postgres) to load the curriculum.
               Retrying automatically…
@@ -90,7 +93,7 @@ export default function HomeScreen() {
         )}
 
         {week === undefined ? (
-          <ActivityIndicator color={Colors.primary} style={styles.loadingIndicator} />
+          <ActivityIndicator color={colors.brandOrange} style={styles.loadingIndicator} />
         ) : week === null ? null : (
           <>
             <View style={styles.weekCard}>
@@ -99,12 +102,12 @@ export default function HomeScreen() {
               <Text style={styles.weeklyOutcome}>{week.weekly_outcome}</Text>
             </View>
 
-            {today && <TodayCard day={today} ready={availableDays?.includes(today.day) ?? false} />}
+            {today && <TodayCard day={today} ready={availableDays?.includes(today.day) ?? false} styles={styles} colors={colors} />}
 
             <Text style={styles.pathHeader}>This week</Text>
             <View style={styles.path}>
               {daysInWeek.map((d) => (
-                <DayRow key={d.day} day={d} ready={availableDays?.includes(d.day) ?? false} />
+                <DayRow key={d.day} day={d} ready={availableDays?.includes(d.day) ?? false} styles={styles} colors={colors} />
               ))}
             </View>
           </>
@@ -114,7 +117,10 @@ export default function HomeScreen() {
   );
 }
 
-function TodayCard({ day, ready }: { day: DayData; ready: boolean }) {
+type Styles = ReturnType<typeof createStyles>;
+type Colors = ReturnType<typeof useTheme>['colors'];
+
+function TodayCard({ day, ready, styles, colors }: { day: DayData; ready: boolean; styles: Styles; colors: Colors }) {
   const quests = [
     [day.quest_1, day.quest_1_type],
     [day.quest_2, day.quest_2_type],
@@ -133,7 +139,7 @@ function TodayCard({ day, ready }: { day: DayData; ready: boolean }) {
       <View style={styles.questChipsRow}>
         {quests.map(([title, type]) => (
           <View key={title} style={styles.questChip}>
-            <Ionicons name={questTypeIcon[type]} size={14} color={Colors.primary} />
+            <Ionicons name={questTypeIcon[type]} size={14} color={colors.brandOrange} />
             <Text style={styles.questChipText}>{title}</Text>
           </View>
         ))}
@@ -149,7 +155,7 @@ function TodayCard({ day, ready }: { day: DayData; ready: boolean }) {
   );
 }
 
-function DayRow({ day, ready }: { day: DayData; ready: boolean }) {
+function DayRow({ day, ready, styles, colors }: { day: DayData; ready: boolean; styles: Styles; colors: Colors }) {
   return (
     <Pressable
       disabled={!ready}
@@ -161,194 +167,196 @@ function DayRow({ day, ready }: { day: DayData; ready: boolean }) {
         {ready ? (
           <Text style={styles.dayCircleText}>{day.day}</Text>
         ) : (
-          <Ionicons name="lock-closed" size={16} color={Colors.textMuted} />
+          <Ionicons name="lock-closed" size={16} color={colors.textMuted} />
         )}
       </View>
       <View style={styles.dayRowBody}>
         <Text style={styles.dayRowTitle}>Day {day.day}</Text>
         <Text style={styles.dayRowOutcome}>{day.daily_mini_outcome}</Text>
       </View>
-      {!ready ? <Text style={styles.soonTag}>Soon</Text> : <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />}
+      {!ready ? <Text style={styles.soonTag}>Soon</Text> : <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />}
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: Colors.bg,
-  },
-  content: {
-    padding: Space.lg,
-    gap: Space.lg,
-    paddingBottom: Space.xxl,
-  },
-  header: {
-    paddingVertical: Space.md,
-  },
-  wordmark: {
-    color: Colors.text,
-    fontSize: 26,
-    fontWeight: '800',
-  },
-  wordmarkSubtitle: {
-    color: Colors.textSecondary,
-    marginTop: 2,
-  },
-  warningBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Space.sm,
-    backgroundColor: Colors.warningMuted,
-    borderRadius: Radii.md,
-    padding: Space.md,
-  },
-  warningText: {
-    color: Colors.warning,
-    fontSize: 12,
-    flex: 1,
-  },
-  retryButton: {
-    borderWidth: 1,
-    borderColor: Colors.warning,
-    borderRadius: Radii.sm,
-    paddingVertical: Space.xs,
-    paddingHorizontal: Space.md,
-  },
-  retryButtonText: {
-    color: Colors.warning,
-    fontSize: 12,
-    fontWeight: '800',
-  },
-  loadingIndicator: {
-    marginTop: Space.xxl,
-  },
-  weekCard: {
-    backgroundColor: Colors.bgCard,
-    borderRadius: Radii.lg,
-    padding: Space.lg,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    gap: Space.xs,
-  },
-  sectionLabel: {
-    color: Colors.primary,
-    fontWeight: '800',
-    fontSize: 12,
-    letterSpacing: 0.5,
-  },
-  weekArc: {
-    color: Colors.text,
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  weeklyOutcome: {
-    color: Colors.textSecondary,
-    marginTop: Space.xs,
-  },
-  todayCard: {
-    backgroundColor: Colors.bgCardAlt,
-    borderRadius: Radii.lg,
-    padding: Space.lg,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    gap: Space.md,
-  },
-  todayHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  todayLabel: {
-    color: Colors.success,
-    fontWeight: '800',
-    fontSize: 12,
-    letterSpacing: 0.5,
-  },
-  todayMinutes: {
-    color: Colors.textMuted,
-    fontSize: 12,
-  },
-  todayOutcome: {
-    color: Colors.text,
-    fontSize: 19,
-    fontWeight: '700',
-  },
-  questChipsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Space.sm,
-  },
-  questChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: Colors.pillBg,
-    borderRadius: Radii.pill,
-    paddingVertical: Space.xs,
-    paddingHorizontal: Space.md,
-  },
-  questChipText: {
-    color: Colors.textSecondary,
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  startButton: {
-    marginTop: Space.sm,
-  },
-  pathHeader: {
-    color: Colors.textMuted,
-    fontWeight: '800',
-    fontSize: 12,
-    letterSpacing: 1,
-    marginTop: Space.sm,
-  },
-  path: {
-    gap: Space.sm,
-  },
-  dayRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Space.md,
-    backgroundColor: Colors.bgCard,
-    borderRadius: Radii.md,
-    padding: Space.md,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-  },
-  dayRowLocked: {
-    opacity: 0.55,
-  },
-  dayCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: Radii.pill,
-    backgroundColor: Colors.trackBg,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dayCircleActive: {
-    backgroundColor: Colors.primary,
-  },
-  dayCircleText: {
-    color: '#fff',
-    fontWeight: '800',
-  },
-  dayRowBody: {
-    flex: 1,
-  },
-  dayRowTitle: {
-    color: Colors.text,
-    fontWeight: '700',
-    fontSize: 14,
-  },
-  dayRowOutcome: {
-    color: Colors.textSecondary,
-    fontSize: 13,
-    marginTop: 2,
-  },
-  soonTag: {
-    color: Colors.textMuted,
-    fontSize: 11,
-    fontWeight: '700',
-  },
-});
+function createStyles(colors: ReturnType<typeof useTheme>['colors']) {
+  return StyleSheet.create({
+    safe: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    content: {
+      padding: Space.lg,
+      gap: Space.lg,
+      paddingBottom: Space.xxl,
+    },
+    header: {
+      paddingVertical: Space.md,
+    },
+    wordmark: {
+      color: colors.graphite,
+      fontSize: 26,
+      fontWeight: '800',
+    },
+    wordmarkSubtitle: {
+      color: colors.muted,
+      marginTop: 2,
+    },
+    warningBanner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Space.sm,
+      backgroundColor: colors.attentionMuted,
+      borderRadius: Radii.md,
+      padding: Space.md,
+    },
+    warningText: {
+      color: colors.attention,
+      fontSize: 12,
+      flex: 1,
+    },
+    retryButton: {
+      borderWidth: 1,
+      borderColor: colors.attention,
+      borderRadius: Radii.sm,
+      paddingVertical: Space.xs,
+      paddingHorizontal: Space.md,
+    },
+    retryButtonText: {
+      color: colors.attention,
+      fontSize: 12,
+      fontWeight: '800',
+    },
+    loadingIndicator: {
+      marginTop: Space.xxl,
+    },
+    weekCard: {
+      backgroundColor: colors.card,
+      borderRadius: Radii.lg,
+      padding: Space.lg,
+      borderWidth: 1,
+      borderColor: colors.cardBorder,
+      gap: Space.xs,
+    },
+    sectionLabel: {
+      color: colors.brandOrange,
+      fontWeight: '800',
+      fontSize: 12,
+      letterSpacing: 0.5,
+    },
+    weekArc: {
+      color: colors.graphite,
+      fontSize: 18,
+      fontWeight: '700',
+    },
+    weeklyOutcome: {
+      color: colors.muted,
+      marginTop: Space.xs,
+    },
+    todayCard: {
+      backgroundColor: colors.card,
+      borderRadius: Radii.lg,
+      padding: Space.lg,
+      borderWidth: 1,
+      borderColor: colors.cardBorder,
+      gap: Space.md,
+    },
+    todayHeaderRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    todayLabel: {
+      color: colors.healthy,
+      fontWeight: '800',
+      fontSize: 12,
+      letterSpacing: 0.5,
+    },
+    todayMinutes: {
+      color: colors.textMuted,
+      fontSize: 12,
+    },
+    todayOutcome: {
+      color: colors.graphite,
+      fontSize: 19,
+      fontWeight: '700',
+    },
+    questChipsRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Space.sm,
+    },
+    questChip: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      backgroundColor: colors.surface,
+      borderRadius: Radii.pill,
+      paddingVertical: Space.xs,
+      paddingHorizontal: Space.md,
+    },
+    questChipText: {
+      color: colors.muted,
+      fontSize: 12,
+      fontWeight: '600',
+    },
+    startButton: {
+      marginTop: Space.sm,
+    },
+    pathHeader: {
+      color: colors.textMuted,
+      fontWeight: '800',
+      fontSize: 12,
+      letterSpacing: 1,
+      marginTop: Space.sm,
+    },
+    path: {
+      gap: Space.sm,
+    },
+    dayRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Space.md,
+      backgroundColor: colors.card,
+      borderRadius: Radii.md,
+      padding: Space.md,
+      borderWidth: 1,
+      borderColor: colors.cardBorder,
+    },
+    dayRowLocked: {
+      opacity: 0.55,
+    },
+    dayCircle: {
+      width: 40,
+      height: 40,
+      borderRadius: Radii.pill,
+      backgroundColor: colors.semanticTrack,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    dayCircleActive: {
+      backgroundColor: colors.brandOrange,
+    },
+    dayCircleText: {
+      color: '#FFFFFF',
+      fontWeight: '800',
+    },
+    dayRowBody: {
+      flex: 1,
+    },
+    dayRowTitle: {
+      color: colors.graphite,
+      fontWeight: '700',
+      fontSize: 14,
+    },
+    dayRowOutcome: {
+      color: colors.muted,
+      fontSize: 13,
+      marginTop: 2,
+    },
+    soonTag: {
+      color: colors.textMuted,
+      fontSize: 11,
+      fontWeight: '700',
+    },
+  });
+}

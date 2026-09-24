@@ -1,9 +1,11 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { SupportLanguage } from '@/components/supernova/LanguageToggle';
 import { PlayAudioButton } from '@/components/supernova/PlayAudioButton';
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
-import { Colors, Radii, Space } from '@/constants/palette';
+import { Radii, Space } from '@/constants/theme';
+import { useTheme } from '@/lib/theme/ThemeProvider';
 import type { RuleStep } from '@/lib/curriculum/lesson-types';
 
 export function RuleCard({
@@ -15,6 +17,8 @@ export function RuleCard({
   language: SupportLanguage;
   onNext: () => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   // Most existing content predates textEn — fall back to Hindi rather than
   // show a blank caption when a step hasn't been authored with one yet.
   const caption = language === 'en' && step.textEn ? step.textEn : step.textHi;
@@ -31,38 +35,40 @@ export function RuleCard({
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: Colors.bgCard,
-    borderRadius: Radii.lg,
-    padding: Space.xl,
-    gap: Space.md,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-  },
-  caption: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-  },
-  patternBox: {
-    backgroundColor: Colors.primaryMuted,
-    borderRadius: Radii.md,
-    paddingVertical: Space.lg,
-    paddingHorizontal: Space.lg,
-  },
-  pattern: {
-    color: Colors.primary,
-    fontWeight: '800',
-    fontSize: 18,
-    textAlign: 'center',
-  },
-  example: {
-    color: Colors.text,
-    fontSize: 15,
-    fontStyle: 'italic',
-    textAlign: 'center',
-  },
-  button: {
-    marginTop: Space.md,
-  },
-});
+function createStyles(colors: ReturnType<typeof useTheme>['colors']) {
+  return StyleSheet.create({
+    card: {
+      backgroundColor: colors.card,
+      borderRadius: Radii.lg,
+      padding: Space.xl,
+      gap: Space.md,
+      borderWidth: 1,
+      borderColor: colors.cardBorder,
+    },
+    caption: {
+      color: colors.muted,
+      fontSize: 14,
+    },
+    patternBox: {
+      backgroundColor: colors.brandOrangeMuted,
+      borderRadius: Radii.md,
+      paddingVertical: Space.lg,
+      paddingHorizontal: Space.lg,
+    },
+    pattern: {
+      color: colors.brandOrange,
+      fontWeight: '800',
+      fontSize: 18,
+      textAlign: 'center',
+    },
+    example: {
+      color: colors.graphite,
+      fontSize: 15,
+      fontStyle: 'italic',
+      textAlign: 'center',
+    },
+    button: {
+      marginTop: Space.md,
+    },
+  });
+}

@@ -1,8 +1,12 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Colors, Space } from '@/constants/palette';
+import { Space } from '@/constants/theme';
+import { useTheme } from '@/lib/theme/ThemeProvider';
 
 export default function NovaScreen() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   return (
     <View style={styles.wrap}>
       <Text style={styles.emoji}>🤖</Text>
@@ -15,26 +19,28 @@ export default function NovaScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  wrap: {
-    flex: 1,
-    backgroundColor: Colors.bg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: Space.xl,
-    gap: Space.md,
-  },
-  emoji: {
-    fontSize: 48,
-  },
-  title: {
-    color: Colors.text,
-    fontSize: 20,
-    fontWeight: '800',
-  },
-  body: {
-    color: Colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-});
+function createStyles(colors: ReturnType<typeof useTheme>['colors']) {
+  return StyleSheet.create({
+    wrap: {
+      flex: 1,
+      backgroundColor: colors.background,
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: Space.xl,
+      gap: Space.md,
+    },
+    emoji: {
+      fontSize: 48,
+    },
+    title: {
+      color: colors.graphite,
+      fontSize: 20,
+      fontWeight: '800',
+    },
+    body: {
+      color: colors.muted,
+      textAlign: 'center',
+      lineHeight: 22,
+    },
+  });
+}

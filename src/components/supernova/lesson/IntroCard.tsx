@@ -1,8 +1,10 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { PlayAudioButton } from '@/components/supernova/PlayAudioButton';
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
-import { Colors, Radii, Space } from '@/constants/palette';
+import { Radii, Space } from '@/constants/theme';
+import { useTheme } from '@/lib/theme/ThemeProvider';
 import type { SupportLanguage } from '@/components/supernova/LanguageToggle';
 import type { IntroStep } from '@/lib/curriculum/lesson-types';
 
@@ -15,6 +17,8 @@ export function IntroCard({
   language: SupportLanguage;
   onNext: () => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   return (
     <View style={styles.card}>
       <Text style={styles.emoji}>{step.emoji}</Text>
@@ -26,27 +30,29 @@ export function IntroCard({
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: Colors.bgCard,
-    borderRadius: Radii.lg,
-    padding: Space.xl,
-    alignItems: 'center',
-    gap: Space.lg,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-  },
-  emoji: {
-    fontSize: 56,
-  },
-  text: {
-    color: Colors.text,
-    fontSize: 17,
-    lineHeight: 26,
-    textAlign: 'center',
-  },
-  button: {
-    alignSelf: 'stretch',
-    marginTop: Space.md,
-  },
-});
+function createStyles(colors: ReturnType<typeof useTheme>['colors']) {
+  return StyleSheet.create({
+    card: {
+      backgroundColor: colors.card,
+      borderRadius: Radii.lg,
+      padding: Space.xl,
+      alignItems: 'center',
+      gap: Space.lg,
+      borderWidth: 1,
+      borderColor: colors.cardBorder,
+    },
+    emoji: {
+      fontSize: 56,
+    },
+    text: {
+      color: colors.graphite,
+      fontSize: 17,
+      lineHeight: 26,
+      textAlign: 'center',
+    },
+    button: {
+      alignSelf: 'stretch',
+      marginTop: Space.md,
+    },
+  });
+}

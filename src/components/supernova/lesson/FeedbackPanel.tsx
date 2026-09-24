@@ -1,7 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Colors, Radii, Space } from '@/constants/palette';
+import { Radii, Space } from '@/constants/theme';
+import { useTheme } from '@/lib/theme/ThemeProvider';
 
 interface FeedbackPanelProps {
   correct: boolean;
@@ -12,12 +14,15 @@ interface FeedbackPanelProps {
 }
 
 export function FeedbackPanel({ correct, explanation, missedWord, wrongAttempt, correctAnswer }: FeedbackPanelProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   if (correct) {
     return (
-      <View style={[styles.wrap, { borderColor: Colors.success }]}>
+      <View style={[styles.wrap, { borderColor: colors.healthy }]}>
         <View style={styles.headerRow}>
-          <Ionicons name="checkmark-circle" size={20} color={Colors.success} />
-          <Text style={[styles.headerText, { color: Colors.success }]}>Correct!</Text>
+          <Ionicons name="checkmark-circle" size={20} color={colors.healthy} />
+          <Text style={[styles.headerText, { color: colors.healthy }]}>Correct!</Text>
         </View>
         {explanation ? <Text style={styles.explanation}>{explanation}</Text> : null}
       </View>
@@ -25,10 +30,10 @@ export function FeedbackPanel({ correct, explanation, missedWord, wrongAttempt, 
   }
 
   return (
-    <View style={[styles.wrap, { borderColor: Colors.warning }]}>
+    <View style={[styles.wrap, { borderColor: colors.attention }]}>
       <View style={styles.headerRow}>
-        <Ionicons name="alert-circle" size={20} color={Colors.warning} />
-        <Text style={[styles.headerText, { color: Colors.warning }]}>FEEDBACK</Text>
+        <Ionicons name="alert-circle" size={20} color={colors.attention} />
+        <Text style={[styles.headerText, { color: colors.attention }]}>FEEDBACK</Text>
       </View>
       {missedWord ? (
         <Text style={styles.explanation}>
@@ -37,13 +42,13 @@ export function FeedbackPanel({ correct, explanation, missedWord, wrongAttempt, 
       ) : null}
       {wrongAttempt ? (
         <View style={styles.compareRow}>
-          <Ionicons name="close" size={16} color={Colors.danger} />
+          <Ionicons name="close" size={16} color={colors.critical} />
           <Text style={styles.wrongText}>{wrongAttempt}</Text>
         </View>
       ) : null}
       {correctAnswer ? (
         <View style={styles.compareRow}>
-          <Ionicons name="checkmark" size={16} color={Colors.success} />
+          <Ionicons name="checkmark" size={16} color={colors.healthy} />
           <Text style={styles.correctText}>{correctAnswer}</Text>
         </View>
       ) : null}
@@ -52,47 +57,49 @@ export function FeedbackPanel({ correct, explanation, missedWord, wrongAttempt, 
   );
 }
 
-const styles = StyleSheet.create({
-  wrap: {
-    marginTop: Space.lg,
-    borderTopWidth: 3,
-    backgroundColor: Colors.bgCard,
-    borderRadius: Radii.md,
-    padding: Space.lg,
-    gap: Space.sm,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Space.sm,
-  },
-  headerText: {
-    fontWeight: '800',
-    fontSize: 13,
-    letterSpacing: 0.5,
-  },
-  explanation: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  missedWord: {
-    color: Colors.success,
-    fontWeight: '800',
-  },
-  compareRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Space.sm,
-  },
-  wrongText: {
-    color: Colors.textMuted,
-    textDecorationLine: 'line-through',
-    fontSize: 15,
-  },
-  correctText: {
-    color: Colors.success,
-    fontWeight: '700',
-    fontSize: 15,
-  },
-});
+function createStyles(colors: ReturnType<typeof useTheme>['colors']) {
+  return StyleSheet.create({
+    wrap: {
+      marginTop: Space.lg,
+      borderTopWidth: 3,
+      backgroundColor: colors.card,
+      borderRadius: Radii.md,
+      padding: Space.lg,
+      gap: Space.sm,
+    },
+    headerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Space.sm,
+    },
+    headerText: {
+      fontWeight: '800',
+      fontSize: 13,
+      letterSpacing: 0.5,
+    },
+    explanation: {
+      color: colors.muted,
+      fontSize: 14,
+      lineHeight: 20,
+    },
+    missedWord: {
+      color: colors.healthy,
+      fontWeight: '800',
+    },
+    compareRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Space.sm,
+    },
+    wrongText: {
+      color: colors.textMuted,
+      textDecorationLine: 'line-through',
+      fontSize: 15,
+    },
+    correctText: {
+      color: colors.healthy,
+      fontWeight: '700',
+      fontSize: 15,
+    },
+  });
+}

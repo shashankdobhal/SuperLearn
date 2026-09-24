@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { FeedbackPanel } from '@/components/supernova/lesson/FeedbackPanel';
@@ -6,7 +6,8 @@ import { HintCard } from '@/components/supernova/HintCard';
 import type { SupportLanguage } from '@/components/supernova/LanguageToggle';
 import { PlayAudioButton } from '@/components/supernova/PlayAudioButton';
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
-import { Colors, Radii, Space } from '@/constants/palette';
+import { Radii, Space } from '@/constants/theme';
+import { useTheme } from '@/lib/theme/ThemeProvider';
 import type { McqStep } from '@/lib/curriculum/lesson-types';
 
 export function McqCard({
@@ -18,6 +19,8 @@ export function McqCard({
   language: SupportLanguage;
   onComplete: (correct: boolean) => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const selected = step.options.find((o) => o.id === selectedId);
@@ -78,57 +81,59 @@ export function McqCard({
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: Colors.bgCard,
-    borderRadius: Radii.lg,
-    padding: Space.xl,
-    gap: Space.lg,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-  },
-  popQuizBanner: {
-    alignSelf: 'flex-start',
-    backgroundColor: Colors.primary,
-    borderRadius: Radii.sm,
-    paddingVertical: Space.xs,
-    paddingHorizontal: Space.md,
-  },
-  popQuizText: {
-    color: '#fff',
-    fontWeight: '800',
-    fontSize: 12,
-    letterSpacing: 0.5,
-  },
-  prompt: {
-    color: Colors.text,
-    fontSize: 17,
-    lineHeight: 24,
-  },
-  options: {
-    gap: Space.md,
-  },
-  option: {
-    borderWidth: 2,
-    borderColor: Colors.cardBorder,
-    borderRadius: Radii.md,
-    paddingVertical: Space.lg,
-    paddingHorizontal: Space.lg,
-  },
-  optionCorrect: {
-    borderColor: Colors.success,
-    backgroundColor: Colors.successMuted,
-  },
-  optionWrong: {
-    borderColor: Colors.danger,
-    backgroundColor: Colors.dangerMuted,
-  },
-  optionText: {
-    color: Colors.text,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  button: {
-    marginTop: Space.sm,
-  },
-});
+function createStyles(colors: ReturnType<typeof useTheme>['colors']) {
+  return StyleSheet.create({
+    card: {
+      backgroundColor: colors.card,
+      borderRadius: Radii.lg,
+      padding: Space.xl,
+      gap: Space.lg,
+      borderWidth: 1,
+      borderColor: colors.cardBorder,
+    },
+    popQuizBanner: {
+      alignSelf: 'flex-start',
+      backgroundColor: colors.brandOrange,
+      borderRadius: Radii.sm,
+      paddingVertical: Space.xs,
+      paddingHorizontal: Space.md,
+    },
+    popQuizText: {
+      color: '#FFFFFF',
+      fontWeight: '800',
+      fontSize: 12,
+      letterSpacing: 0.5,
+    },
+    prompt: {
+      color: colors.graphite,
+      fontSize: 17,
+      lineHeight: 24,
+    },
+    options: {
+      gap: Space.md,
+    },
+    option: {
+      borderWidth: 2,
+      borderColor: colors.cardBorder,
+      borderRadius: Radii.md,
+      paddingVertical: Space.lg,
+      paddingHorizontal: Space.lg,
+    },
+    optionCorrect: {
+      borderColor: colors.healthy,
+      backgroundColor: colors.healthyMuted,
+    },
+    optionWrong: {
+      borderColor: colors.critical,
+      backgroundColor: colors.criticalMuted,
+    },
+    optionText: {
+      color: colors.graphite,
+      fontSize: 15,
+      fontWeight: '600',
+    },
+    button: {
+      marginTop: Space.sm,
+    },
+  });
+}

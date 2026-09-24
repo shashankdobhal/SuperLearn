@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { SupportLanguage } from '@/components/supernova/LanguageToggle';
@@ -7,7 +7,8 @@ import { FeedbackPanel } from '@/components/supernova/lesson/FeedbackPanel';
 import { HintCard } from '@/components/supernova/HintCard';
 import { PlayAudioButton } from '@/components/supernova/PlayAudioButton';
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
-import { Colors, Radii, Space } from '@/constants/palette';
+import { Radii, Space } from '@/constants/theme';
+import { useTheme } from '@/lib/theme/ThemeProvider';
 import type { BuildStep } from '@/lib/curriculum/lesson-types';
 
 interface Chip {
@@ -33,6 +34,8 @@ export function BuildCard({
   language: SupportLanguage;
   onComplete: (correct: boolean, missedWord?: string) => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   // `step` changes remount this component (see key={step.id} in lesson.tsx),
   // so a lazy initializer is enough — no need to recompute on prop change.
   const [bank, setBank] = useState<Chip[]>(() => shuffledChips([...step.answer, ...(step.distractors ?? [])]));
@@ -104,7 +107,7 @@ export function BuildCard({
 
       <View style={styles.actionsRow}>
         <Pressable onPress={undo} style={styles.undoButton} disabled={!!checked}>
-          <Ionicons name="arrow-undo" size={18} color={Colors.textSecondary} />
+          <Ionicons name="arrow-undo" size={18} color={colors.muted} />
         </Pressable>
         {checked ? (
           <PrimaryButton
@@ -126,75 +129,77 @@ export function BuildCard({
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: Colors.bgCard,
-    borderRadius: Radii.lg,
-    padding: Space.xl,
-    gap: Space.lg,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-  },
-  prompt: {
-    color: Colors.text,
-    fontSize: 17,
-  },
-  answerRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Space.sm,
-    minHeight: 44,
-    borderBottomWidth: 2,
-    borderBottomColor: Colors.cardBorder,
-    paddingBottom: Space.md,
-  },
-  answerLine: {
-    flex: 1,
-    height: 2,
-  },
-  bankRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Space.sm,
-  },
-  chip: {
-    backgroundColor: Colors.primaryMuted,
-    borderRadius: Radii.sm,
-    paddingVertical: Space.sm,
-    paddingHorizontal: Space.md,
-  },
-  chipText: {
-    color: Colors.primary,
-    fontWeight: '700',
-    fontSize: 15,
-  },
-  chipOutline: {
-    borderWidth: 2,
-    borderColor: Colors.primary,
-    borderRadius: Radii.sm,
-    paddingVertical: Space.sm,
-    paddingHorizontal: Space.md,
-  },
-  chipOutlineText: {
-    color: Colors.text,
-    fontWeight: '700',
-    fontSize: 15,
-  },
-  actionsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Space.md,
-  },
-  undoButton: {
-    width: 48,
-    height: 48,
-    borderRadius: Radii.md,
-    borderWidth: 2,
-    borderColor: Colors.cardBorder,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkButton: {
-    flex: 1,
-  },
-});
+function createStyles(colors: ReturnType<typeof useTheme>['colors']) {
+  return StyleSheet.create({
+    card: {
+      backgroundColor: colors.card,
+      borderRadius: Radii.lg,
+      padding: Space.xl,
+      gap: Space.lg,
+      borderWidth: 1,
+      borderColor: colors.cardBorder,
+    },
+    prompt: {
+      color: colors.graphite,
+      fontSize: 17,
+    },
+    answerRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Space.sm,
+      minHeight: 44,
+      borderBottomWidth: 2,
+      borderBottomColor: colors.cardBorder,
+      paddingBottom: Space.md,
+    },
+    answerLine: {
+      flex: 1,
+      height: 2,
+    },
+    bankRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Space.sm,
+    },
+    chip: {
+      backgroundColor: colors.brandOrangeMuted,
+      borderRadius: Radii.sm,
+      paddingVertical: Space.sm,
+      paddingHorizontal: Space.md,
+    },
+    chipText: {
+      color: colors.brandOrange,
+      fontWeight: '700',
+      fontSize: 15,
+    },
+    chipOutline: {
+      borderWidth: 2,
+      borderColor: colors.brandOrange,
+      borderRadius: Radii.sm,
+      paddingVertical: Space.sm,
+      paddingHorizontal: Space.md,
+    },
+    chipOutlineText: {
+      color: colors.graphite,
+      fontWeight: '700',
+      fontSize: 15,
+    },
+    actionsRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Space.md,
+    },
+    undoButton: {
+      width: 48,
+      height: 48,
+      borderRadius: Radii.md,
+      borderWidth: 2,
+      borderColor: colors.cardBorder,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    checkButton: {
+      flex: 1,
+    },
+  });
+}
