@@ -1,27 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Speech from 'expo-speech';
+import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { HintCard } from '@/components/supernova/HintCard';
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
 import { Colors, Radii, Space } from '@/constants/palette';
 import type { SpeakStep } from '@/lib/curriculum/lesson-types';
 import { playAudio } from '@/lib/audio/ttsAudio';
+import { scoreSpokenAnswer } from '@/lib/audio/wordMatch';
 
-type Phase = 'idle' | 'recording' | 'evaluating' | 'feedback';
+type Phase = 'idle' | 'recording' | 'feedback' | 'mic-error';
 
-const ENCOURAGEMENT = [
-  'Nice! That was clear and natural.',
-  'Great job — that sounded confident.',
-  'Well said!',
-  'Good — keep up that pace.',
-];
-
-// NOTE: this is a UI simulation of the Speak → Converse loop, not real speech
-// recognition or AI grading — there's no audio capture or Nova backend yet.
-// The mic button just walks through recording → evaluating → feedback so the
-// interaction loop can be tried end to end.
 export function SpeakCard({
   step,
   index,
@@ -33,23 +24,51 @@ export function SpeakCard({
   index: number;
   total: number;
   language: 'hi' | 'en';
-  onComplete: (estimatedWords: number) => void;
+  onComplete: (wordsUsed: number) => void;
 }) {
   const [phase, setPhase] = useState<Phase>('idle');
   const [showHint, setShowHint] = useState(false);
   const [promptLang, setPromptLang] = useState<'hi' | 'en'>(language);
-  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const [transcript, setTranscript] = useState('');
+  const [micErrorMessage, setMicErrorMessage] = useState('');
+  const latestTranscript = useRef('');
 
   // `step` changes remount this component (see key={step.id} in lesson.tsx),
-  // so `phase`/`showHint` already reset to their initial values above.
+  // so `phase`/`showHint`/`transcript` already reset to their initial values
+  // above — no reset effect needed.
 
   useEffect(() => {
-    const timersAtMount = timers.current;
     return () => {
-      timersAtMount.forEach(clearTimeout);
       Speech.stop();
+      ExpoSpeechRecognitionModule.stop();
     };
   }, []);
+
+  // expo-speech-recognition wraps iOS SFSpeechRecognizer / Android
+  // SpeechRecognizer / the browser's Web SpeechRecognition behind one API —
+  // this is real transcription, not a simulation.
+  useSpeechRecognitionEvent('result', (event) => {
+    const text = event.results[0]?.transcript ?? '';
+    latestTranscript.current = text;
+    setTranscript(text);
+  });
+  useSpeechRecognitionEvent('end', () => {
+    // No separate async grading step exists — scoreSpokenAnswer runs
+    // synchronously at render time (see `match` below) — so go straight to
+    // feedback.
+    setTranscript(latestTranscript.current);
+    setPhase('feedback');
+  });
+  useSpeechRecognitionEvent('error', (event) => {
+    setMicErrorMessage(
+      event.error === 'not-allowed'
+        ? "Microphone access was denied — check your device's settings to allow it."
+        : event.error === 'no-speech'
+          ? "Didn't catch that — try speaking a little louder."
+          : `Speech recognition error: ${event.message || event.error}`,
+    );
+    setPhase('mic-error');
+  });
 
   const isLast = index === total - 1;
   const headerLabel = isLast ? (step.missionLabel ?? 'Last Question!') : `${total - index} Questions Remaining`;
@@ -64,21 +83,24 @@ export function SpeakCard({
     playAudio(step.promptEn, 'en');
   }
 
-  function startRecording() {
+  async function startRecording() {
+    const result = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+    if (!result.granted) {
+      setMicErrorMessage("Microphone access was denied — check your device's settings to allow it.");
+      setPhase('mic-error');
+      return;
+    }
+    latestTranscript.current = '';
+    setTranscript('');
     setPhase('recording');
+    ExpoSpeechRecognitionModule.start({ lang: 'en-US', interimResults: true, continuous: false });
   }
 
   function stopRecording() {
-    setPhase('evaluating');
-    timers.current.push(
-      setTimeout(() => setPhase('feedback'), 900),
-    );
+    ExpoSpeechRecognitionModule.stop();
   }
 
-  function estimatedWords() {
-    const base = step.hint?.example.split(' ').length ?? 4;
-    return base + 2;
-  }
+  const match = scoreSpokenAnswer(transcript, step.hint?.example);
 
   return (
     <View style={styles.wrap}>
@@ -116,10 +138,25 @@ export function SpeakCard({
 
       {showHint && step.hint ? <HintCard hint={step.hint} /> : null}
 
+      {phase === 'recording' && transcript ? (
+        <View style={styles.bubble}>
+          <Text style={styles.transcriptLabel}>WHAT WE HEARD</Text>
+          <Text style={styles.bubbleText}>{transcript}</Text>
+        </View>
+      ) : null}
+
       {phase === 'feedback' ? (
         <View style={styles.feedbackRow}>
           <View style={[styles.bubble, styles.feedbackBubble]}>
-            <Text style={styles.bubbleText}>{ENCOURAGEMENT[index % ENCOURAGEMENT.length]}</Text>
+            <Text style={styles.transcriptLabel}>YOU SAID</Text>
+            <Text style={styles.bubbleText}>{transcript || '(nothing heard)'}</Text>
+            <Text style={[styles.bubbleText, match.correct ? styles.correctText : styles.tryAgainText]}>
+              {match.correct
+                ? 'Nice! That sounded good.'
+                : match.missingWords.length > 0
+                  ? `Good try — see if you can also use: ${match.missingWords.join(', ')}`
+                  : 'Good try — say a little more next time.'}
+            </Text>
           </View>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>N</Text>
@@ -127,8 +164,14 @@ export function SpeakCard({
         </View>
       ) : null}
 
+      {phase === 'mic-error' ? (
+        <View style={styles.bubble}>
+          <Text style={styles.tryAgainText}>{micErrorMessage}</Text>
+        </View>
+      ) : null}
+
       <View style={styles.micArea}>
-        {phase === 'idle' && (
+        {(phase === 'idle' || phase === 'mic-error') && (
           <Pressable onPress={startRecording} style={styles.micButton}>
             <Ionicons name="mic" size={32} color="#fff" />
           </Pressable>
@@ -139,12 +182,11 @@ export function SpeakCard({
           </Pressable>
         )}
         {phase === 'recording' && <Text style={styles.recordingLabel}>Recording… tap to stop</Text>}
-        {phase === 'evaluating' && <ActivityIndicator color={Colors.primary} />}
         {phase === 'feedback' && (
           <PrimaryButton
             label={isLast ? 'FINISH' : 'CONTINUE'}
             variant="success"
-            onPress={() => onComplete(estimatedWords())}
+            onPress={() => onComplete(match.wordsUsed)}
             style={styles.continueButton}
           />
         )}
@@ -236,6 +278,20 @@ const styles = StyleSheet.create({
   feedbackBubble: {
     borderTopLeftRadius: Radii.md,
     borderTopRightRadius: 4,
+  },
+  transcriptLabel: {
+    color: Colors.textMuted,
+    fontWeight: '800',
+    fontSize: 11,
+    letterSpacing: 0.5,
+  },
+  correctText: {
+    color: Colors.success,
+    fontWeight: '700',
+  },
+  tryAgainText: {
+    color: Colors.textSecondary,
+    fontWeight: '600',
   },
   playButton: {
     flexDirection: 'row',

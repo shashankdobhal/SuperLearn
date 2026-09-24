@@ -34,7 +34,14 @@
           "imageWidth": 76
         }
       ],
-      "expo-audio"
+      "expo-audio",
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Supernova needs microphone access so you can practice speaking English.",
+          "speechRecognitionPermission": "Supernova uses speech recognition to check what you said."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
