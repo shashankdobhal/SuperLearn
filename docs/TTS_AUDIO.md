@@ -20,8 +20,9 @@ This is why the pipeline is a batch script, not a server:
   and `SpeakCard`'s prompt. Writes `scripts/tts/manifest.json` (gitignored,
   regenerated on demand).
 - **`scripts/tts/generate_audio.py`** synthesizes each manifest entry with
-  [Kokoro](https://github.com/hexgrad/kokoro-onnx) (Apache-2.0, self-hosted,
-  no API key, no per-character cost) and writes one MP3 into
+  [Indic Parler-TTS](https://huggingface.co/ai4bharat/indic-parler-tts)
+  (Apache-2.0, self-hosted, no API key beyond a one-time gate, no
+  per-character cost) and writes one MP3 into
   `server/public/audio/<hash>.mp3`. Idempotent — skips any hash that already
   has a file, so re-running after adding new lesson content only generates
   the new lines.
@@ -45,48 +46,72 @@ recomputes the hash itself before writing each file and hard-fails if it
 doesn't match what the manifest says, so a hash-algorithm drift is caught at
 generation time, not discovered later as a mysteriously-missing file.
 
-## Choosing Kokoro
+## Choosing the TTS engine
 
-Two open-source options were considered:
+Three options were tried, in order, each rejected/replaced for a concrete
+reason:
 
-- **OS/browser built-in TTS** (`expo-speech` alone) — free, zero setup, but
-  quality and language coverage depend entirely on what's installed on the
-  user's device. On this dev machine, the Hindi voice (`Lekha`, macOS)
-  reported successful playback events but produced no audible sound — the
-  voice's sound data isn't actually downloaded, a real per-device failure
-  mode with no app-side fix.
-- **Kokoro-82M** — a small (82M parameter) open-source neural TTS model with
-  real trained voices for both English and Hindi (`lang_code='h'`, e.g.
-  `hf_alpha`), runs on CPU (no GPU required, ~1-3s per short lesson line on
-  this machine), self-hosted with no ongoing API cost. This is what
-  `generate_audio.py` uses.
+1. **OS/browser built-in TTS** (`expo-speech` alone) — free, zero setup, but
+   quality and language coverage depend entirely on what's installed on the
+   user's device. On the original dev machine, the Hindi voice (`Lekha`,
+   macOS) reported successful playback events but produced no audible sound
+   — the voice's sound data isn't actually downloaded, a real per-device
+   failure mode with no app-side fix. Still used as the fallback for any
+   line that hasn't been batch-generated.
+2. **Kokoro-82M** — a small, fast, fully free open-source neural TTS model.
+   Fixed the silent-Hindi bug (self-hosted, not device-dependent) but two
+   problems remained: sounded synthetic ("robotic") to a real listener, and
+   its only English voices are American/British — no Indian-English option
+   at all, which matters for a curriculum meant to sound relatable to
+   Indian learners.
+3. **Indic Parler-TTS** (`ai4bharat/indic-parler-tts`, Apache-2.0, AI4Bharat
+   / IIT Madras) — what's actually used now. Trained specifically for
+   Indian languages, including English spoken with an Indian accent — its
+   English voices (`Mary`/`Thoma`) are the first option here that isn't
+   American- or British-accented, and it has native Hindi voices
+   (`Rohit`/`Divya`) in the same model rather than routing Hindi through a
+   generic phonemizer the way Kokoro does. Confirmed by listening to actual
+   generated samples before committing to the switch.
 
-Not chosen: [Kokoro-FastAPI](https://github.com/remsky/Kokoro-FastAPI) /
-Docker (the shape [freelingo](https://github.com/ArtCC/freelingo) uses) —
-that's a *live* server, which we don't need for fixed content, and this
-machine has no Docker installed. Calling the `kokoro` Python package
-directly in a batch script gets the same model with less moving parts.
+**Tradeoff accepted:** Indic Parler-TTS is ~0.9B parameters vs Kokoro's 82M
+— an order of magnitude slower to generate and a multi-GB download, versus
+Kokoro's few-minutes/one-download footprint. Acceptable here because
+generation is a one-time batch job, not a per-request cost — the ongoing
+cost is identical (zero) either way.
 
-**Known limitation:** Kokoro's Hindi phonemization routes through
-`espeak-ng` (a generic rule-based phonemizer, bundled via the pip-installed
-`espeakng-loader` — no system package needed), not a dedicated Hindi
-frontend the way English gets. The acoustic voice itself is still a real
-Hindi-trained neural voice, but pronunciation nuance may be a notch behind
-the English voice's. If Hindi quality specifically becomes a blocker later,
-that's the component to revisit.
+**Not chosen:** a live TTS server (e.g.
+[Kokoro-FastAPI](https://github.com/remsky/Kokoro-FastAPI) via Docker, the
+shape [freelingo](https://github.com/ArtCC/freelingo) runs) — we don't need
+one for fixed content, and calling the Python packages directly in a batch
+script gets the same models with less moving parts and no Docker
+dependency.
 
 ## Setup (one-time)
 
-Needs Python 3.10+ (not the system `python3`, which may be older):
+Needs Python 3.10+ (not the system `python3`, which may be older), and a
+Hugging Face account since `ai4bharat/indic-parler-tts` is a gated
+repository (free, instant on accepting the gate — not a manual review):
 
-```bash
-python3.12 -m venv .venv-tts
-source .venv-tts/bin/activate
-pip install -r scripts/tts/requirements.txt --index-url https://download.pytorch.org/whl/cpu --extra-index-url https://pypi.org/simple
-```
-
-The `--index-url` fetches the CPU-only `torch` wheel (much smaller, no CUDA)
-with the `--extra-index-url` fallback for the other, non-torch packages.
+1. Log into [huggingface.co](https://huggingface.co), visit
+   [huggingface.co/ai4bharat/indic-parler-tts](https://huggingface.co/ai4bharat/indic-parler-tts),
+   and accept the access gate on that page.
+2. Create a **Read** access token at
+   [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens).
+3. Save it locally (gitignored via `.env.*`, never commit this):
+   ```
+   # .env.tts
+   HF_TOKEN=hf_xxxxxxxxxxxxxxxxxxxxx
+   ```
+4. Set up the Python environment:
+   ```bash
+   python3.12 -m venv .venv-tts
+   source .venv-tts/bin/activate
+   pip install -r scripts/tts/requirements.txt --index-url https://download.pytorch.org/whl/cpu --extra-index-url https://pypi.org/simple
+   ```
+   The `--index-url` fetches the CPU-only `torch` wheel (much smaller, no
+   CUDA) with the `--extra-index-url` fallback for the other packages
+   (including `parler-tts`, installed straight from its GitHub repo since
+   it isn't on PyPI).
 
 ## Regenerating audio
 
@@ -96,10 +121,17 @@ source .venv-tts/bin/activate
 python3 scripts/tts/generate_audio.py        # 2. synthesize any new lines
 ```
 
-The first run downloads the Kokoro-82M model (~330MB, cached by
-`huggingface_hub` afterward). Run this after authoring new lesson days —
-`npm run server` picks up new files immediately since it's just static
-serving, no restart needed.
+`generate_audio.py` reads `.env.tts` itself, so no need to `source` it
+separately. The first run downloads the model (~3.6GB, cached by
+`huggingface_hub` afterward) — expect real per-line generation time on CPU
+(seconds, not milliseconds, per short lesson line) given the model's size;
+this is fine since it's a background batch job, not something a user waits
+on. Run this after authoring new lesson days — `npm run server` picks up
+new files immediately since it's just static serving, no restart needed.
+
+To force a full regeneration (e.g. after changing a speaker/description in
+`generate_audio.py`), delete `server/public/audio/*.mp3` first — the script
+only fills in missing hashes, it never overwrites existing files.
 
 ## What's not done yet
 

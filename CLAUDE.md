@@ -7,8 +7,9 @@
 @docs/CONTENT_DATABASE.md
 @docs/CONTENT_AUTHORING_TEMPLATE.md
 @docs/TTS_AUDIO.md
+@docs/CONTENT_GENERATION.md
 
-Read all five docs above before designing curriculum content, data models,
+Read all six docs above before designing curriculum content, data models,
 or learner-facing flows. `docs/CURRICULUM_PHILOSOPHY.md` is the product/
 curriculum brief and is treated as a standing instruction, not just
 background reading — in particular its "source of truth" rule at the
@@ -32,9 +33,20 @@ against anything script-generated) — then write the importer described in
 the doc's "turning a filled sheet into the database" section rather than
 hand-converting rows.
 `docs/TTS_AUDIO.md` covers lesson read-aloud audio: batch-generated once per
-`(language, text)` with self-hosted Kokoro TTS (`scripts/tts/`), served as
-static files, not a live TTS call per request — the curriculum is fixed
-content, so there's no per-user/per-request cost to design around. Falls
-back to on-device `expo-speech` (`src/lib/audio/nativeSpeech.ts`) for any
-line that hasn't been batch-generated yet.
+`(language, text)` with self-hosted Indic Parler-TTS (`scripts/tts/`,
+Indian-accented English + native Hindi in one model), served as static
+files, not a live TTS call per request — the curriculum is fixed content,
+so there's no per-user/per-request cost to design around. Falls back to
+on-device `expo-speech` (`src/lib/audio/nativeSpeech.ts`) for any line that
+hasn't been batch-generated yet.
+`docs/CONTENT_GENERATION.md` covers batch-generating Weeks 5+ lesson
+content with an open-source LLM (Groq-hosted `openai/gpt-oss-120b`)
+instead of authoring in conversation — every generated day is re-validated
+against `days.json`/`skills.json` before being written (`scripts/content-gen/`).
+The real constraint is Groq's free tier: 200,000 tokens/day per model
+(separate from the per-minute cap), refilling continuously rather than on
+a fixed reset — realistically ~1 week's worth of days per calendar day, not
+an overnight job. `generate_days.ts` detects that specific quota error and
+stops cleanly with the real wait time rather than hanging; just re-run the
+same command later, already-written days are skipped.
 
