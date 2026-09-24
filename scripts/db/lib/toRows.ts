@@ -115,12 +115,12 @@ function splitIntro(step: IntroStep) {
 }
 
 function splitRule(step: RuleStep) {
+  const fields: FieldsByLocale = { hi: { text: step.textHi } };
+  if (step.textEn) fields.en = { text: step.textEn };
   return {
     // pattern/example are the English grammar being taught — invariant.
     payload: { pattern: step.pattern, example: step.example },
-    // RuleCard only ever renders textHi today (no language-toggle support
-    // yet for rule captions) — see docs/CONTENT_DATABASE.md known gaps.
-    fields: { hi: { text: step.textHi } } as FieldsByLocale,
+    fields,
   };
 }
 
@@ -140,6 +140,8 @@ function splitMcq(step: McqStep) {
 }
 
 function splitBuild(step: BuildStep) {
+  const fields: FieldsByLocale = { hi: { prompt: step.promptHi } };
+  if (step.promptEn) fields.en = { prompt: step.promptEn };
   return {
     payload: {
       answer: step.answer,
@@ -147,8 +149,7 @@ function splitBuild(step: BuildStep) {
       hint: step.hint,
       audioTextEn: step.audioTextEn ?? null,
     },
-    // BuildCard only renders promptHi today (same toggle gap as rule cards).
-    fields: { hi: { prompt: step.promptHi } } as FieldsByLocale,
+    fields,
   };
 }
 

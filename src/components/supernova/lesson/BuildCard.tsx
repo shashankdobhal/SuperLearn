@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import type { SupportLanguage } from '@/components/supernova/LanguageToggle';
 import { FeedbackPanel } from '@/components/supernova/lesson/FeedbackPanel';
 import { HintCard } from '@/components/supernova/HintCard';
 import { PlayAudioButton } from '@/components/supernova/PlayAudioButton';
@@ -25,9 +26,11 @@ function shuffledChips(words: string[]): Chip[] {
 
 export function BuildCard({
   step,
+  language,
   onComplete,
 }: {
   step: BuildStep;
+  language: SupportLanguage;
   onComplete: (correct: boolean, missedWord?: string) => void;
 }) {
   // `step` changes remount this component (see key={step.id} in lesson.tsx),
@@ -61,10 +64,16 @@ export function BuildCard({
     setChecked({ correct, missedWord });
   }
 
+  // Deliberately falls back to Hindi when no promptEn exists — true for
+  // every genuine translation exercise (promptEn is only ever authored for
+  // "retell" steps, where showing English framing text doesn't hand over
+  // the answer — see BuildStep.promptEn's docs in lesson-types.ts).
+  const prompt = language === 'en' && step.promptEn ? step.promptEn : step.promptHi;
+
   return (
     <View style={styles.card}>
       {step.audioTextEn ? <PlayAudioButton text={step.audioTextEn} /> : null}
-      <Text style={styles.prompt}>{step.promptHi}</Text>
+      <Text style={styles.prompt}>{prompt}</Text>
       <HintCard hint={step.hint} />
 
       <View style={styles.answerRow}>

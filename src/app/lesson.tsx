@@ -223,7 +223,7 @@ export default function LessonScreen() {
       case 'intro':
         return <IntroCard key={step.id} step={step} language={language} onNext={advanceLearn} />;
       case 'rule':
-        return <RuleCard key={step.id} step={step} onNext={advanceLearn} />;
+        return <RuleCard key={step.id} step={step} language={language} onNext={advanceLearn} />;
       case 'mcq':
         return (
           <McqCard
@@ -245,6 +245,7 @@ export default function LessonScreen() {
           <BuildCard
             key={step.id}
             step={step}
+            language={language}
             onComplete={(correct, missedWord) => {
               recordResult({
                 correct,

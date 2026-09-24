@@ -32,6 +32,10 @@ export interface RuleStep {
   pattern: string;
   example: string;
   textHi: string;
+  /** English translation of textHi's caption, for the Hindi/English toggle
+   * — optional since most existing content predates this field; RuleCard
+   * falls back to textHi when absent. */
+  textEn?: string;
 }
 
 export interface McqOption {
@@ -61,6 +65,15 @@ export interface BuildStep {
   id: string;
   quest: number;
   promptHi: string;
+  /** English translation of promptHi, for the Hindi/English toggle —
+   * optional, and deliberately left unset for genuine translation
+   * exercises (where promptHi *is* the exercise — showing its English
+   * translation would hand the learner the answer). Only meaningful for a
+   * "retell" step (audioTextEn set), where promptHi is just framing
+   * instruction text, not the thing being tested. BuildCard falls back to
+   * promptHi when absent, so existing content (which never sets this) is
+   * unaffected. */
+  promptEn?: string;
   answer: string[];
   distractors?: string[];
   hint: LanguageHint;

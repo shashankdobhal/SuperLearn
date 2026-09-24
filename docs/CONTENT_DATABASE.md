@@ -116,12 +116,17 @@ English is **not** special-cased — it's `locale = 'en'` in
 `content_translations` like any other language, because for intro/mcq/speak
 steps the English line shown is instructional copy, not the taught content.
 
-**Known gap carried over from the lesson files**: `rule` and `build` steps
-only ever show Hindi in the app today (`RuleCard`/`BuildCard` don't respect
-the language toggle — see `src/components/supernova/lesson/RuleCard.tsx` and
-`BuildCard.tsx`) so they only have an `hi` translation row, no `en`. Worth
-fixing in the UI before relying on this for a real English-support-language
-learner.
+`rule` and `build` steps now respect the language toggle too
+(`RuleCard`/`BuildCard` read an optional `textEn`/`promptEn` — see
+`lesson-types.ts` — falling back to Hindi when a step predates the field,
+which is every step authored before this). `build`'s `promptEn` is
+deliberately only ever authored for "retell" steps (`audioTextEn` set) —
+for a genuine translation exercise, `promptHi` *is* the exercise, so
+showing its English translation would hand the learner the answer; those
+steps simply don't get a `promptEn` and always show Hindi regardless of
+the toggle. Only a handful of steps (`week-01-day-03.ts`) have `en` rows
+for these fields so far — most lesson content still only has `hi`, and
+will correctly fall back until authored.
 
 ## Scripts (`scripts/db/`)
 

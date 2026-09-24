@@ -68,6 +68,7 @@ export async function getDayLesson(week: number, day: number) {
           pattern: p.pattern,
           example: p.example,
           textHi: hi?.text ?? '',
+          textEn: en?.text ?? undefined,
         };
       case 'mcq':
         return {
@@ -89,6 +90,7 @@ export async function getDayLesson(week: number, day: number) {
           id: item.id,
           quest: item.quest_index,
           promptHi: hi?.prompt ?? '',
+          promptEn: en?.prompt ?? undefined,
           answer: p.answer,
           distractors: p.distractors ?? undefined,
           hint: p.hint,

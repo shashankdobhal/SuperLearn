@@ -36,6 +36,7 @@ export const week01Day03: DayLesson = {
       pattern: 'I like + [verb-ing].',
       example: 'I like playing football.',
       textHi: 'कोई activity पसंद है, यह बताने के लिए यह pattern use करें।',
+      textEn: 'Use this pattern to say you like doing an activity.',
     },
     {
       type: 'rule',
@@ -44,6 +45,7 @@ export const week01Day03: DayLesson = {
       pattern: "I'm interested in + [noun / verb-ing].",
       example: "I'm interested in music.",
       textHi: 'अपनी रुचि बताने का एक और तरीका।',
+      textEn: 'Another way to say what interests you.',
     },
     {
       type: 'mcq',
@@ -136,6 +138,7 @@ export const week01Day03: DayLesson = {
       id: 'listen-retell',
       quest: 2,
       promptHi: 'जो sentence आपने अभी सुना, उसे फिर से बनाइए।',
+      promptEn: 'Rebuild the sentence you just heard.',
       audioTextEn: 'He is interested in photography.',
       answer: ['He', 'is', 'interested', 'in', 'photography'],
       hint: { pattern: "[Subject] + is interested in + [noun]", example: "She's interested in painting." },
