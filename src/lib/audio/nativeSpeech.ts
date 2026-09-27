@@ -18,8 +18,22 @@ const VOICE_BY_LOCALE: Record<string, string> = {
 };
 
 /** Speaks `text` aloud via on-device/browser TTS. `language` is 'en'/'hi'
- * (matching SupportLanguage) — mapped internally to a locale + voice. */
-export function speak(text: string, language: 'en' | 'hi' = 'en') {
+ * (matching SupportLanguage) — mapped internally to a locale + voice.
+ * Resolves once speech actually finishes (or stops/errors) — existing
+ * fire-and-forget callers (PlayAudioButton etc.) don't await this, so
+ * they're unaffected; NovaConversation needs it to know when to start
+ * listening for the learner's next turn. */
+export function speak(text: string, language: 'en' | 'hi' = 'en'): Promise<void> {
   const locale = LOCALE_BY_LANGUAGE[language];
-  Speech.speak(text, { language: locale, voice: VOICE_BY_LOCALE[locale], pitch: 1.05, rate: 0.92 });
+  return new Promise((resolve) => {
+    Speech.speak(text, {
+      language: locale,
+      voice: VOICE_BY_LOCALE[locale],
+      pitch: 1.05,
+      rate: 0.92,
+      onDone: () => resolve(),
+      onStopped: () => resolve(),
+      onError: () => resolve(),
+    });
+  });
 }

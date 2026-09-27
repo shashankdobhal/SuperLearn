@@ -24,20 +24,30 @@ async function fileExists(url: string): Promise<boolean> {
  * docs/TTS_AUDIO.md, scripts/tts/) for real neural-voice quality; falls back
  * to on-device TTS (PlayAudioButton's `speak`) when that line hasn't been
  * batch-generated yet (or the API server is unreachable) — never a dead
- * button, matching the app's general "degrade gracefully" behavior.
+ * button, matching the app's general "degrade gracefully" behavior. Nova's
+ * conversational replies (src/components/supernova/nova/NovaConversation.tsx)
+ * are generated live and can never have a pre-rendered file, so they always
+ * take the on-device path here — expected, not a fallback failure.
+ *
+ * Resolves once playback actually finishes, not just once it starts —
+ * needed so a caller can await "Nova finished speaking" before listening
+ * for the next turn.
  */
 export async function playAudio(text: string, language: SpokenLanguage = 'en'): Promise<void> {
   const url = getAudioUrl(text, language);
   if (await fileExists(url)) {
     const player = createAudioPlayer(url);
-    const subscription = player.addListener('playbackStatusUpdate', (status) => {
-      if (status.didJustFinish) {
-        subscription.remove();
-        player.remove();
-      }
+    await new Promise<void>((resolve) => {
+      const subscription = player.addListener('playbackStatusUpdate', (status) => {
+        if (status.didJustFinish) {
+          subscription.remove();
+          player.remove();
+          resolve();
+        }
+      });
+      player.play();
     });
-    player.play();
     return;
   }
-  speak(text, language);
+  await speak(text, language);
 }
