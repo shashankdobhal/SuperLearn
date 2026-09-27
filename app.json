@@ -29,7 +29,8 @@
         "android.permission.MODIFY_AUDIO_SETTINGS",
         "android.permission.FOREGROUND_SERVICE",
         "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
-      ]
+      ],
+      "package": "com.shado001.superlearn"
     },
     "web": {
       "output": "static",
@@ -52,7 +53,8 @@
           "microphonePermission": "SuperLearn needs microphone access so you can practice speaking English.",
           "speechRecognitionPermission": "SuperLearn uses speech recognition to check what you said."
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true,
