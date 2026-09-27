@@ -9,20 +9,20 @@
 
   Install (run these yourself, in your own Terminal — not through Claude):
     mkdir -p ~/Library/LaunchAgents
-    cp scripts/content-gen/com.supernova.contentgen.plist ~/Library/LaunchAgents/
-    launchctl load ~/Library/LaunchAgents/com.supernova.contentgen.plist
+    cp scripts/content-gen/com.superlearn.contentgen.plist ~/Library/LaunchAgents/
+    launchctl load ~/Library/LaunchAgents/com.superlearn.contentgen.plist
 
   Check on it:
-    launchctl list | grep supernova         # shows it's loaded + last exit code
+    launchctl list | grep superlearn        # shows it's loaded + last exit code
     tail -f logs/content-gen.log            # live progress
 
   Stop it:
-    launchctl unload ~/Library/LaunchAgents/com.supernova.contentgen.plist
+    launchctl unload ~/Library/LaunchAgents/com.superlearn.contentgen.plist
 -->
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>com.supernova.contentgen</string>
+  <string>com.superlearn.contentgen</string>
 
   <key>ProgramArguments</key>
   <array>

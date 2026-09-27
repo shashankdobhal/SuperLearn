@@ -93,24 +93,24 @@ decoupled from any terminal, IDE, or Claude session:
 
 ```bash
 mkdir -p ~/Library/LaunchAgents
-cp scripts/content-gen/com.supernova.contentgen.plist ~/Library/LaunchAgents/
-launchctl load ~/Library/LaunchAgents/com.supernova.contentgen.plist
+cp scripts/content-gen/com.superlearn.contentgen.plist ~/Library/LaunchAgents/
+launchctl load ~/Library/LaunchAgents/com.superlearn.contentgen.plist
 ```
 
 Check on it (also just plain shell — no Claude session needed):
 
 ```bash
-launchctl list | grep supernova     # confirms it's loaded + last exit code
+launchctl list | grep superlearn     # confirms it's loaded + last exit code
 tail -f logs/content-gen.log        # live progress
 ```
 
 Stop it:
 
 ```bash
-launchctl unload ~/Library/LaunchAgents/com.supernova.contentgen.plist
+launchctl unload ~/Library/LaunchAgents/com.superlearn.contentgen.plist
 ```
 
-The job definition is [`scripts/content-gen/com.supernova.contentgen.plist`](com.supernova.contentgen.plist)
+The job definition is [`scripts/content-gen/com.superlearn.contentgen.plist`](com.superlearn.contentgen.plist)
 — edit the week range in its `ProgramArguments` before installing if you
 want something other than `6-50`. It restarts on a crash but not after a
 genuinely successful full run (every requested week generated).

@@ -1,12 +1,12 @@
-# Supernova — Master Curriculum & Product Instructions
+# SuperLearn — Master Curriculum & Product Instructions
 
-This is the persistent product/curriculum brief for Supernova. Any AI session or
+This is the persistent product/curriculum brief for SuperLearn. Any AI session or
 contributor generating curriculum content, designing data models, or building
 learner-facing flows should read this first and stay aligned with it.
 
 ## 1. Project Context
 
-Supernova is a **speaking-first** English learning product for Hindi and other
+SuperLearn is a **speaking-first** English learning product for Hindi and other
 Indian-language speakers. It is **not** a conventional grammar course.
 
 Primary objective: **help learners become capable, confident speakers of English.**
@@ -30,7 +30,7 @@ Emphasis order (not a strict pedagogical ranking — a product priority):
 7. Reading
 8. Writing
 
-**Do NOT** turn Supernova into a grammar syllabus, a vocabulary-memorization app,
+**Do NOT** turn SuperLearn into a grammar syllabus, a vocabulary-memorization app,
 a translation app, a reading course, or a writing course. Those exist only to
 support spoken English.
 
@@ -129,7 +129,7 @@ Some days are light (1–2 modes), others heavier (3–4 modes).
 
 ## 10. Speaking Must Appear Frequently
 
-Because Supernova is speaking-first, most days include **Speak and/or
+Because SuperLearn is speaking-first, most days include **Speak and/or
 Converse**. Occasional lighter input/review days are fine, but speaking stays
 central:
 
@@ -280,7 +280,7 @@ duplicate content unnecessarily.
 
 The UI renders curriculum data (`Course Track → Week → Day → Quests → Tasks →
 Content`). Never branch the app on `if week == 1 { ... }`. This is what lets
-Supernova later add personas, levels, languages, revised curriculum,
+SuperLearn later add personas, levels, languages, revised curriculum,
 AI-generated variants and adaptive sequencing without rewriting the app.
 
 ## 25. Daily Experience (what the learner sees)
@@ -295,7 +295,7 @@ Today
 ```
 
 The 50-week curriculum is largely invisible — the learner experiences
-"today," Supernova manages long-term progression underneath.
+"today," SuperLearn manages long-term progression underneath.
 
 ## 26. Adaptive Learning
 
@@ -352,7 +352,7 @@ bridge, not a destination; creates opportunities for spontaneous speech;
 allows lightweight daily experiences; provides measurable mastery evidence;
 reuses competencies across personas; maintains long-term progression.
 
-## 31. The Supernova Learning Loop
+## 31. The SuperLearn Learning Loop
 
 ```
 I understand it.
@@ -378,7 +378,7 @@ activities so they can use English.
 ## Source of truth for Everyday Confidence → Beginner
 
 `content/curriculum/everyday-confidence/beginner/` (parsed from
-`Supernova_Everyday_Confidence_Beginner_50_Weeks.xlsx`) is the **initial
+`SuperLearn_Everyday_Confidence_Beginner_50_Weeks.xlsx`) is the **initial
 curriculum reference and source of truth** for that specific track: the
 50-week map, 350 daily outcomes, quest blueprint, skill map, speaking rubric
 and design rules it contains.

@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "Supernova",
-    "slug": "supernova-app",
+    "name": "SuperLearn",
+    "slug": "superlearn",
+    "owner": "shado001",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "supernovaapp",
+    "scheme": "superlearnapp",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#0A0B14",
     "ios": {
@@ -38,8 +39,8 @@
       [
         "expo-speech-recognition",
         {
-          "microphonePermission": "Supernova needs microphone access so you can practice speaking English.",
-          "speechRecognitionPermission": "Supernova uses speech recognition to check what you said."
+          "microphonePermission": "SuperLearn needs microphone access so you can practice speaking English.",
+          "speechRecognitionPermission": "SuperLearn uses speech recognition to check what you said."
         }
       ]
     ],

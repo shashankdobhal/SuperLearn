@@ -254,7 +254,7 @@ ws2.column_dimensions["C"].width = 60
 ws2.column_dimensions["D"].width = 45
 
 title_font = Font(name="Arial", bold=True, size=14)
-ws2["A1"] = "Supernova — Content Authoring Template"
+ws2["A1"] = "SuperLearn — Content Authoring Template"
 ws2["A1"].font = title_font
 ws2["A2"] = ("Columns A-G (grey) are pre-filled from the real curriculum blueprint for every one of the "
              "840 quest slots across all 50 weeks — don't change them, and don't add rows for a "

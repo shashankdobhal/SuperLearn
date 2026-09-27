@@ -4,7 +4,7 @@
  * radius, elevation, and motion only. Atlas's component specs (§20),
  * layout system (§21), mobile guidelines (§22), and product language
  * (§17) are written for ZealMint's industrial-operations product and
- * don't apply here — Supernova keeps its own component structure and
+ * don't apply here — SuperLearn keeps its own component structure and
  * language, just restyled with Atlas's visual tokens.
  *
  * Atlas is documented light-mode only. `dark` below is derived (not
@@ -110,7 +110,7 @@ export const Typography = {
 export const Space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32, xxxl: 48 } as const;
 
 // --- Atlas §19 radius scale (+ `pill` for badges/pill buttons, an
-// addition of Supernova's own — Atlas doesn't define one) ---
+// addition of SuperLearn's own — Atlas doesn't define one) ---
 export const Radii = { sm: 6, md: 10, lg: 12, xl: 20, pill: 999 } as const;
 
 // --- Atlas §19 motion durations ---

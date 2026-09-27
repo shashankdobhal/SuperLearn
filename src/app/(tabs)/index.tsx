@@ -65,7 +65,7 @@ export default function HomeScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={[styles.content, { width: contentWidth }]}>
           <View style={styles.header}>
-            <Text style={styles.wordmark}>Supernova</Text>
+            <Text style={styles.wordmark}>SuperLearn</Text>
             <Text style={styles.wordmarkSubtitle}>Everyday Confidence · Beginner</Text>
           </View>
 

@@ -137,5 +137,5 @@ app.post('/api/nova/report', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Supernova API listening on http://localhost:${PORT}`);
+  console.log(`SuperLearn API listening on http://localhost:${PORT}`);
 });

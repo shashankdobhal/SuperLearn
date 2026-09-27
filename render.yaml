@@ -1,4 +1,4 @@
-# Render Blueprint for the Supernova API server (server/index.ts).
+# Render Blueprint for the SuperLearn API server (server/index.ts).
 #
 # Install: on Render's dashboard, "New" -> "Blueprint" -> select the
 # shashankdobhal/SuperLearn repo. Render reads this file and provisions the

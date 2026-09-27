@@ -1,6 +1,6 @@
 @AGENTS.md
 
-# Supernova
+# SuperLearn
 
 @docs/CURRICULUM_PHILOSOPHY.md
 @docs/CURRICULUM_DATA.md
