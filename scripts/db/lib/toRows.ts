@@ -28,6 +28,10 @@ export interface TranslationRow {
   taskIndex: number;
   locale: string;
   fields: Record<string, string>;
+  /** content_translations.source — defaults to 'human' (see insertRows.ts)
+   * since every source feeding this today (hand-authored .ts, a filled
+   * Tasks sheet) is human-written; a future MT pipeline would set this. */
+  source?: 'human' | 'machine' | 'machine_reviewed';
 }
 
 /**

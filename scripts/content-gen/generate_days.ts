@@ -7,9 +7,18 @@
  * logged as a failure and skipped, never silently shipped with bad content.
  *
  * Usage:
- *   npx tsx scripts/content-gen/generate_days.ts 5        # just week 5
- *   npx tsx scripts/content-gen/generate_days.ts 5-10      # weeks 5 through 10
+ *   npx tsx scripts/content-gen/generate_days.ts 5             # just week 5
+ *   npx tsx scripts/content-gen/generate_days.ts 5-10           # weeks 5 through 10
+ *   npx tsx scripts/content-gen/generate_days.ts 6-50 --watch    # keep sleeping through
+ *                                                                 Groq's daily-quota stops
+ *                                                                 and resuming on its own,
+ *                                                                 instead of exiting for a
+ *                                                                 human to manually re-run
+ *                                                                 (already-written days are
+ *                                                                 always skipped, so this is
+ *                                                                 safe to leave running).
  */
+import { spawnSync } from 'child_process';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import path from 'path';
 
@@ -119,12 +128,36 @@ async function buildContext() {
   };
 }
 
-async function main() {
-  const [startWeek, endWeek] = parseWeekRange(process.argv[2]);
-  const ctx = await buildContext();
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
+/** Pushes newly-written lesson files into Postgres (see
+ * scripts/db/migrate-lessons.ts) so the app's Home screen roadmap picks up
+ * new weeks without a human remembering to run this separately. Idempotent
+ * and re-reads every lesson file each time, so it's only worth calling once
+ * a pass has actually written something new — never mid-day. Logs and
+ * continues on failure (e.g. Postgres not running locally) rather than
+ * taking down the generation loop over it. */
+function migrateNewLessons(): void {
+  console.log('\nMigrating newly-generated lessons into Postgres...');
+  const result = spawnSync('npx', ['tsx', 'scripts/db/migrate-lessons.ts'], {
+    cwd: path.join(__dirname, '..', '..'),
+    stdio: 'inherit',
+  });
+  if (result.status !== 0) {
+    console.log('  (migration failed — new weeks won\'t show up in the app until this is re-run manually; content on disk is unaffected)');
+  }
+}
+
+async function runOnePass(
+  startWeek: number,
+  endWeek: number,
+  ctx: Awaited<ReturnType<typeof buildContext>>,
+): Promise<{ results: string[]; stoppedForQuota: DailyQuotaExceededError | null; wroteAny: boolean }> {
   const results: string[] = [];
   let stoppedForQuota: DailyQuotaExceededError | null = null;
+  let wroteAny = false;
   outer: for (let week = startWeek; week <= endWeek; week++) {
     for (let day = 1; day <= 7; day++) {
       const filePath = path.join(LESSONS_DIR, fileNameFor(week, day));
@@ -137,6 +170,7 @@ async function main() {
         const result = await generateOneDay(week, day, ctx);
         if (result.ok) {
           console.log(`OK${result.warns.length ? ` (${result.warns.length} warning(s): ${result.warns.join('; ')})` : ''}`);
+          wroteAny = true;
         } else {
           console.log(`FAILED after ${MAX_ATTEMPTS} attempts:\n  ${result.fails.join('\n  ')}`);
           results.push(`week=${week} day=${day}: ${result.fails.join('; ')}`);
@@ -150,21 +184,47 @@ async function main() {
       }
     }
   }
+  return { results, stoppedForQuota, wroteAny };
+}
 
-  if (stoppedForQuota) {
-    console.log(
-      `\nSTOPPED: Groq's daily token quota for this model is exhausted (needs ~${Math.round(stoppedForQuota.waitSeconds / 60)} min to free up enough for one more day, per its own estimate). Not retrying further in this run — see docs/CONTENT_GENERATION.md. Re-run this same command later once quota has recovered; already-written days are skipped automatically.`,
-    );
-    process.exitCode = 2;
+async function main() {
+  const [startWeek, endWeek] = parseWeekRange(process.argv[2]);
+  const watch = process.argv.includes('--watch');
+  const ctx = await buildContext();
+
+  for (;;) {
+    const { results, stoppedForQuota, wroteAny } = await runOnePass(startWeek, endWeek, ctx);
+    if (wroteAny) migrateNewLessons();
+
+    if (stoppedForQuota) {
+      if (!watch) {
+        console.log(
+          `\nSTOPPED: Groq's daily token quota for this model is exhausted (needs ~${Math.round(stoppedForQuota.waitSeconds / 60)} min to free up enough for one more day, per its own estimate). Not retrying further in this run — see docs/CONTENT_GENERATION.md. Re-run this same command later once quota has recovered; already-written days are skipped automatically.`,
+        );
+        process.exitCode = 2;
+        return;
+      }
+      // --watch mode: this is an expected, recurring stop (the free-tier
+      // daily quota is a slowly-refilling bucket, not a per-run problem) —
+      // sleep through it and resume automatically instead of exiting for a
+      // human to notice and re-run. A small buffer on top of Groq's own
+      // estimate avoids waking up just short of the refill.
+      const waitMs = (stoppedForQuota.waitSeconds + 30) * 1000;
+      console.log(
+        `\nQuota exhausted — sleeping ~${Math.round(waitMs / 60000)} min before resuming automatically (--watch mode)...`,
+      );
+      await sleep(waitMs);
+      continue;
+    }
+
+    if (results.length > 0) {
+      console.log(`\n${results.length} day(s) failed validation and were NOT written:`);
+      for (const r of results) console.log(`  - ${r}`);
+      process.exitCode = 1;
+    } else {
+      console.log('\nAll requested days generated and validated successfully.');
+    }
     return;
-  }
-
-  if (results.length > 0) {
-    console.log(`\n${results.length} day(s) failed validation and were NOT written:`);
-    for (const r of results) console.log(`  - ${r}`);
-    process.exitCode = 1;
-  } else {
-    console.log('\nAll requested days generated and validated successfully.');
   }
 }
 

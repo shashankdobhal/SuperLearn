@@ -56,14 +56,64 @@ echo "GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxx" > .env.groq
 ## Usage
 
 ```bash
-npx tsx scripts/content-gen/generate_days.ts 8        # just week 8
-npx tsx scripts/content-gen/generate_days.ts 8-50      # weeks 8 through 50
+npx tsx scripts/content-gen/generate_days.ts 8              # just week 8
+npx tsx scripts/content-gen/generate_days.ts 8-50            # weeks 8 through 50
+npx tsx scripts/content-gen/generate_days.ts 8-50 --watch     # keep running, sleeping
+                                                                through daily-quota stops
+                                                                and resuming on its own
 ```
 
 Idempotent — re-running skips any `week-XX-day-YY.ts` that already exists,
 so it's always safe to just re-run the same command to pick up where a
 previous run left off (including one stopped by the daily quota — see
-below).
+below). `--watch` builds on this: instead of exiting on a quota stop for a
+human to notice and re-run, it sleeps for the wait time Groq itself reports
+(plus a small buffer) and resumes the same process automatically. Meant to
+be left running in the background for as long as the machine is up; if it's
+interrupted for any reason, just re-run the same command — nothing is lost.
+
+Whenever a pass writes at least one new day, `generate_days.ts` also runs
+`scripts/db/migrate-lessons.ts` for you (logged, not silent) so the new
+week(s) show up in the app's Home screen roadmap (`GET
+/api/curriculum/roadmap`) without a separate manual step. If Postgres isn't
+running locally this logs a failure and moves on — the files on disk are
+unaffected, just re-run the migration script by hand once the DB is back.
+
+## Run it independently of Claude Code — not as a Claude Code background task
+
+`generate_days.ts` only ever calls Groq, never Claude — but running the
+`--watch` loop *as a Claude Code background task* (as an earlier version of
+this doc suggested) still ties it to that session: every quota-sleep/resume
+cycle fires a task-notification back into the conversation, which costs
+Claude usage just to keep restating "still going" — for a job that can run
+for days. There's no reason to pay for that.
+
+Instead, run it as a plain macOS background daemon via launchd — completely
+decoupled from any terminal, IDE, or Claude session:
+
+```bash
+mkdir -p ~/Library/LaunchAgents
+cp scripts/content-gen/com.supernova.contentgen.plist ~/Library/LaunchAgents/
+launchctl load ~/Library/LaunchAgents/com.supernova.contentgen.plist
+```
+
+Check on it (also just plain shell — no Claude session needed):
+
+```bash
+launchctl list | grep supernova     # confirms it's loaded + last exit code
+tail -f logs/content-gen.log        # live progress
+```
+
+Stop it:
+
+```bash
+launchctl unload ~/Library/LaunchAgents/com.supernova.contentgen.plist
+```
+
+The job definition is [`scripts/content-gen/com.supernova.contentgen.plist`](com.supernova.contentgen.plist)
+— edit the week range in its `ProgramArguments` before installing if you
+want something other than `6-50`. It restarts on a crash but not after a
+genuinely successful full run (every requested week generated).
 
 ## The real constraint: Groq's free tier is 200,000 tokens/DAY, not just per-minute
 

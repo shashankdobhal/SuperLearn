@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  A macOS launchd LaunchAgent that runs content generation as its own
+  background daemon — independent of any terminal window, IDE, or Claude
+  Code session. It calls Groq directly (free tier; see docs/CONTENT_GENERATION.md),
+  never Claude, so running it this way costs nothing beyond Groq's own
+  rate limits and doesn't tie up any Claude Code session or its usage.
+
+  Install (run these yourself, in your own Terminal — not through Claude):
+    mkdir -p ~/Library/LaunchAgents
+    cp scripts/content-gen/com.supernova.contentgen.plist ~/Library/LaunchAgents/
+    launchctl load ~/Library/LaunchAgents/com.supernova.contentgen.plist
+
+  Check on it:
+    launchctl list | grep supernova         # shows it's loaded + last exit code
+    tail -f logs/content-gen.log            # live progress
+
+  Stop it:
+    launchctl unload ~/Library/LaunchAgents/com.supernova.contentgen.plist
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.supernova.contentgen</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/opt/homebrew/bin/npx</string>
+    <string>tsx</string>
+    <string>scripts/content-gen/generate_days.ts</string>
+    <string>6-50</string>
+    <string>--watch</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/shashank/Repos/supernova-app</string>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>/Users/shashank/Repos/supernova-app/logs/content-gen.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/shashank/Repos/supernova-app/logs/content-gen.log</string>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <!-- Restarts it if it crashes (a real bug, a lost network connection),
+       but NOT after it exits 0 — which only happens once every requested
+       week has been generated and validated, i.e. genuinely done. -->
+  <key>KeepAlive</key>
+  <dict>
+    <key>SuccessfulExit</key>
+    <false/>
+  </dict>
+</dict>
+</plist>
