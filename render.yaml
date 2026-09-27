@@ -1,0 +1,30 @@
+# Render Blueprint for the Supernova API server (server/index.ts).
+#
+# Install: on Render's dashboard, "New" -> "Blueprint" -> select the
+# shashankdobhal/SuperLearn repo. Render reads this file and provisions the
+# service below automatically — no manual field-filling.
+#
+# Two env vars are marked `sync: false` (never committed, deliberately not
+# given a value here) — Render will prompt for them once when the Blueprint
+# is created:
+#   - DATABASE_URL   the Supabase Session pooler connection string
+#   - GROQ_API_KEY    used by server/groq.ts (Nova AI + SpeakCard grading)
+#
+# `plan: free` per "let's start with Render free tier for now" — internal
+# testing only. Switch this to `starter` (and re-deploy) the moment this
+# opens up to real external users; see docs/CONTENT_DATABASE.md and the
+# rest of this repo's history for why free's 15-minute spin-down isn't
+# acceptable once real users are involved.
+services:
+  - type: web
+    name: supernova-api
+    env: node
+    plan: free
+    region: singapore
+    buildCommand: npm install
+    startCommand: npm run server
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
