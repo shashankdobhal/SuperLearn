@@ -29,7 +29,7 @@ export function RuleCard({
         <Text style={styles.pattern}>{step.pattern}</Text>
       </View>
       <Text style={styles.example}>{step.example}</Text>
-      <PlayAudioButton text={step.example} />
+      <PlayAudioButton text={step.example} autoPlay />
       <PrimaryButton label="NEXT!" onPress={onNext} style={styles.button} />
     </View>
   );

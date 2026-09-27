@@ -34,10 +34,14 @@ export function McqCard({
         </View>
       ) : null}
 
-      {step.audioTextEn ? <PlayAudioButton text={step.audioTextEn} /> : null}
+      {step.audioTextEn ? <PlayAudioButton text={step.audioTextEn} autoPlay /> : null}
 
       <Text style={styles.prompt}>{language === 'hi' ? step.promptHi : step.promptEn}</Text>
-      <PlayAudioButton text={language === 'hi' ? step.promptHi : step.promptEn} language={language} />
+      <PlayAudioButton
+        text={language === 'hi' ? step.promptHi : step.promptEn}
+        language={language}
+        autoPlay={!step.audioTextEn}
+      />
 
       {step.hint ? <HintCard hint={step.hint} /> : null}
 

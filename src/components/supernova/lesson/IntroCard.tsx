@@ -19,12 +19,22 @@ export function IntroCard({
 }) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <View style={styles.card}>
       <Text style={styles.emoji}>{step.emoji}</Text>
-      {step.audioTextEn ? <PlayAudioButton text={step.audioTextEn} /> : null}
+      {/* Auto-plays as soon as this card appears — including the very
+          first card of a lesson (day 1 always opens on an intro step).
+          audioTextEn (a listening-comprehension clip) takes priority when
+          present so the two buttons never both autoplay and talk over
+          each other — see PlayAudioButton's `autoPlay` docs. */}
+      {step.audioTextEn ? <PlayAudioButton text={step.audioTextEn} autoPlay /> : null}
       <Text style={styles.text}>{language === 'hi' ? step.textHi : step.textEn}</Text>
-      <PlayAudioButton text={language === 'hi' ? step.textHi : step.textEn} language={language} />
+      <PlayAudioButton
+        text={language === 'hi' ? step.textHi : step.textEn}
+        language={language}
+        autoPlay={!step.audioTextEn}
+      />
       <PrimaryButton label="NEXT!" onPress={onNext} style={styles.button} />
     </View>
   );

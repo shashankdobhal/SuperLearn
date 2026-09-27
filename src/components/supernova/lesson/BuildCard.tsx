@@ -75,7 +75,7 @@ export function BuildCard({
 
   return (
     <View style={styles.card}>
-      {step.audioTextEn ? <PlayAudioButton text={step.audioTextEn} /> : null}
+      {step.audioTextEn ? <PlayAudioButton text={step.audioTextEn} autoPlay /> : null}
       <Text style={styles.prompt}>{prompt}</Text>
       <HintCard hint={step.hint} />
 
