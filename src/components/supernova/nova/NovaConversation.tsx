@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import * as Speech from 'expo-speech';
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -7,7 +6,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
 import { Radii, Space, Typography } from '@/constants/theme';
 import { useTheme } from '@/lib/theme/ThemeProvider';
-import { playAudio } from '@/lib/audio/ttsAudio';
+import { playAudio, stopAllAudio } from '@/lib/audio/ttsAudio';
 import { fetchNovaReply, fetchNovaReport, type NovaReportResult, type NovaTurn } from '@/lib/api/nova';
 
 // v1: a fixed 10-minute, fixed-difficulty free-form conversation — not
@@ -56,7 +55,7 @@ export function NovaConversation() {
 
   useEffect(() => {
     return () => {
-      Speech.stop();
+      stopAllAudio();
       ExpoSpeechRecognitionModule.stop();
     };
   }, []);
@@ -148,7 +147,7 @@ export function NovaConversation() {
     if (endedRef.current) return;
     endedRef.current = true;
     stopListening();
-    Speech.stop();
+    stopAllAudio();
     setPhase('ending');
     const result = await fetchNovaReport(history).catch(() => fallbackReport(history));
     setReport(result);

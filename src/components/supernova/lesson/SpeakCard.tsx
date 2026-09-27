@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import * as Speech from 'expo-speech';
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -9,7 +8,7 @@ import { PrimaryButton } from '@/components/supernova/PrimaryButton';
 import { Radii, Space } from '@/constants/theme';
 import { useTheme } from '@/lib/theme/ThemeProvider';
 import type { SpeakStep } from '@/lib/curriculum/lesson-types';
-import { playAudio } from '@/lib/audio/ttsAudio';
+import { playAudio, stopAllAudio } from '@/lib/audio/ttsAudio';
 import { scoreSpokenAnswer } from '@/lib/audio/wordMatch';
 import { gradeSpokenAnswer, type SpeakGradeResult } from '@/lib/api/speak';
 
@@ -50,7 +49,7 @@ export function SpeakCard({
 
   useEffect(() => {
     return () => {
-      Speech.stop();
+      stopAllAudio();
       ExpoSpeechRecognitionModule.stop();
     };
   }, []);

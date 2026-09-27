@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { Radii, Space } from '@/constants/theme';
 import { useTheme } from '@/lib/theme/ThemeProvider';
-import { playAudio, type SpokenLanguage } from '@/lib/audio/ttsAudio';
+import { playAudio, stopAllAudio, type SpokenLanguage } from '@/lib/audio/ttsAudio';
 
 /** Speaks `text` aloud — a pre-generated Indic Parler-TTS audio file when
  * one exists for this exact (language, text) pair, on-device TTS
@@ -36,7 +36,14 @@ export function PlayAudioButton({
     if (autoPlay) playAudio(text, language);
     // Runs once per mount only — the card this button lives on remounts
     // per step (key={step.id}) when the text would actually change, so
-    // this never needs to re-fire mid-mount.
+    // this never needs to re-fire mid-mount. playAudio() itself now stops
+    // whatever was previously playing before starting, but this cleanup is
+    // still needed for the case where nothing new ever calls playAudio —
+    // e.g. closing the lesson entirely mid-narration — so audio doesn't
+    // keep playing over whatever screen comes next.
+    return () => {
+      if (autoPlay) stopAllAudio();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
