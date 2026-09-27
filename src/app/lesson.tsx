@@ -167,7 +167,12 @@ export default function LessonScreen() {
 
   function advanceLearn() {
     if (learnIndex + 1 < learnFlow.length) {
-      setLearnIndex((i) => i + 1);
+      // Functional update, but clamped against `learnFlow.length` itself
+      // rather than just incrementing — several onNext calls firing in the
+      // same tick (e.g. a fast double-tap) would otherwise all see this
+      // same stale `learnIndex` and all take this branch, chaining past
+      // the array's end and crashing renderLearnStep() on the next render.
+      setLearnIndex((i) => Math.min(i + 1, learnFlow.length - 1));
     } else {
       setPhase('transition');
     }
@@ -176,7 +181,8 @@ export default function LessonScreen() {
   function advanceSpeak(w: number) {
     setWordsUsed((total) => total + w);
     if (speakIndex + 1 < speakFlow.length) {
-      setSpeakIndex((i) => i + 1);
+      // Same stale-closure clamp as advanceLearn() above.
+      setSpeakIndex((i) => Math.min(i + 1, speakFlow.length - 1));
     } else {
       const start = startedAt.current ?? Date.now();
       setElapsedSeconds(Math.max(1, Math.round((Date.now() - start) / 1000)));
