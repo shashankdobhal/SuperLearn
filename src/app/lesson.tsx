@@ -1,4 +1,17 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
+
+/** Goes back if there's actual navigation history to go back to, otherwise
+ * falls back to Home — router.back() alone throws a visible "GO_BACK was
+ * not handled" error toast whenever this screen was entered without one
+ * (a direct URL load, a page refresh while already on a lesson, a deep
+ * link) rather than by navigating from Home in-app. */
+function goBackOrHome() {
+  if (router.canGoBack()) {
+    router.back();
+  } else {
+    router.replace('/');
+  }
+}
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -121,7 +134,7 @@ export default function LessonScreen() {
             onPress={() => setRetryTick((t) => t + 1)}
             style={styles.emptyButton}
           />
-          <PrimaryButton label="BACK" variant="ghost" onPress={() => router.back()} />
+          <PrimaryButton label="BACK" variant="ghost" onPress={goBackOrHome} />
         </View>
       </SafeAreaView>
     );
@@ -146,7 +159,7 @@ export default function LessonScreen() {
             Week {week} / Day {day} exists in the curriculum data, but its task content hasn&apos;t been
             written yet. Check Home for which days are unlocked.
           </Text>
-          <PrimaryButton label="BACK" onPress={() => router.back()} style={styles.emptyButton} />
+          <PrimaryButton label="BACK" onPress={goBackOrHome} style={styles.emptyButton} />
         </View>
       </SafeAreaView>
     );
@@ -162,7 +175,7 @@ export default function LessonScreen() {
   const effectivePhase: Phase = phase === 'learn' && learnFlow.length === 0 ? 'speak' : phase;
 
   function closeLesson() {
-    router.back();
+    goBackOrHome();
   }
 
   function advanceLearn() {
