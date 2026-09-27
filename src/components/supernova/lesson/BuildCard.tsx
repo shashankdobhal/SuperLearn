@@ -9,7 +9,20 @@ import { PlayAudioButton } from '@/components/supernova/PlayAudioButton';
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
 import { Radii, Space } from '@/constants/theme';
 import { useTheme } from '@/lib/theme/ThemeProvider';
+import { speak } from '@/lib/audio/nativeSpeech';
+import { stopAllAudio } from '@/lib/audio/ttsAudio';
 import type { BuildStep } from '@/lib/curriculum/lesson-types';
+
+/** Speaks a single tapped word chip aloud immediately. Deliberately bypasses
+ * playAudio()'s pre-generated-file lookup (and its network round-trip) —
+ * a single common English word is the one case on-device TTS handles
+ * reliably (unlike full sentences or Hindi), so there's no quality reason
+ * to pre-generate one file per word across the whole curriculum, and going
+ * straight to on-device speech keeps tapping chips feeling instant. */
+function speakWord(word: string) {
+  stopAllAudio();
+  speak(word, 'en');
+}
 
 interface Chip {
   key: string;
@@ -46,6 +59,7 @@ export function BuildCard({
     if (checked) return;
     setBank((b) => b.filter((c) => c.key !== chip.key));
     setSelected((s) => [...s, chip]);
+    speakWord(chip.text);
   }
 
   function moveToBank(chip: Chip) {
