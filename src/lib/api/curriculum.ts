@@ -39,3 +39,16 @@ export async function fetchDaysForWeek(week: number): Promise<DayRow[]> {
   const { days } = await apiGet<{ week: number; days: DayRow[] }>(`/api/curriculum/weeks/${week}/days`);
   return days;
 }
+
+export interface RoadmapWeek extends WeekRow {
+  days: DayRow[];
+  availableDays: number[];
+}
+
+/** Every week that has authored content so far — grows on its own as the
+ * content-generation pipeline (scripts/content-gen/generate_days.ts) writes
+ * and migrates more weeks in, no client-side guessing of a week count. */
+export async function fetchRoadmap(): Promise<RoadmapWeek[]> {
+  const { weeks } = await apiGet<{ weeks: RoadmapWeek[] }>('/api/curriculum/roadmap');
+  return weeks;
+}

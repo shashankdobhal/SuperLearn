@@ -130,3 +130,13 @@ export async function getAvailableDays(week: number): Promise<number[]> {
   );
   return rows.map((r) => r.day);
 }
+
+/** Every week that has at least one authored (migrated) day — i.e. "whatever
+ * courses are created", growing as scripts/db/migrate-lessons.ts picks up
+ * newly-generated weeks. Drives the Home screen's roadmap (see
+ * /api/curriculum/roadmap) so it can keep appending real content instead of
+ * needing a hardcoded week count. */
+export async function getWeeksWithContent(): Promise<number[]> {
+  const { rows } = await pool.query<{ week: number }>(`select distinct week from content_items order by week`);
+  return rows.map((r) => r.week);
+}

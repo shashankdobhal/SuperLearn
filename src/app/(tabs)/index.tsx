@@ -1,27 +1,27 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
+import { LearningPath, nextPathIndex } from '@/components/supernova/LearningPath';
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
 import { Radii, Space } from '@/constants/theme';
 import { useTheme } from '@/lib/theme/ThemeProvider';
-import { fetchDaysForWeek, fetchWeek, type DayRow as DayData, type WeekRow } from '@/lib/api/curriculum';
-import { fetchAvailableDays } from '@/lib/api/lessons';
+import { fetchRoadmap, type DayRow as DayData, type RoadmapWeek } from '@/lib/api/curriculum';
 import { questTypeIcon } from '@/lib/curriculum/questIcons';
 import type { QuestType } from '@/lib/curriculum/types';
 
-const CURRENT_WEEK = 1;
+// Caps the page to a centered column on wide viewports (web/desktop)
+// instead of stretching a mobile-shaped layout edge-to-edge.
+const MAX_CONTENT_WIDTH = 640;
 
 export default function HomeScreen() {
   const { colors } = useTheme();
+  const { width: windowWidth } = useWindowDimensions();
+  const contentWidth = Math.min(windowWidth, MAX_CONTENT_WIDTH);
   const styles = useMemo(() => createStyles(colors), [colors]);
   // undefined = still loading, null = the API/Postgres couldn't be reached.
-  const [week, setWeek] = useState<WeekRow | null | undefined>(undefined);
-  const [daysInWeek, setDaysInWeek] = useState<DayData[]>([]);
-  // null = still loading (every day renders locked until this resolves, to
-  // avoid a flash of "unlocked" before we actually know).
-  const [availableDays, setAvailableDays] = useState<number[] | null>(null);
+  const [roadmap, setRoadmap] = useState<RoadmapWeek[] | null | undefined>(undefined);
   const [serverUnreachable, setServerUnreachable] = useState(false);
   // Bumping this re-runs the fetch effect below — used both for the manual
   // Retry button and for automatic retries while unreachable.
@@ -29,29 +29,15 @@ export default function HomeScreen() {
 
   useEffect(() => {
     let cancelled = false;
-    Promise.all([fetchWeek(CURRENT_WEEK), fetchDaysForWeek(CURRENT_WEEK)])
-      .then(([weekRow, days]) => {
+    fetchRoadmap()
+      .then((weeks) => {
         if (cancelled) return;
-        setWeek(weekRow);
-        setDaysInWeek(days);
+        setRoadmap(weeks);
         setServerUnreachable(false);
       })
       .catch(() => {
         if (!cancelled) {
-          setWeek(null);
-          setServerUnreachable(true);
-        }
-      });
-    fetchAvailableDays(CURRENT_WEEK)
-      .then((days) => {
-        if (!cancelled) {
-          setAvailableDays(days);
-          setServerUnreachable(false);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setAvailableDays([]);
+          setRoadmap(null);
           setServerUnreachable(true);
         }
       });
@@ -69,49 +55,89 @@ export default function HomeScreen() {
     return () => clearInterval(id);
   }, [serverUnreachable]);
 
-  const today = daysInWeek[0];
+  const currentWeek = roadmap?.[0];
+  const futureWeeks = roadmap?.slice(1) ?? [];
+  const today = currentWeek?.days[0];
+  const goToDay = (d: DayData) => router.push({ pathname: '/lesson', params: { week: String(d.week), day: String(d.day) } });
 
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.wordmark}>Supernova</Text>
-          <Text style={styles.wordmarkSubtitle}>Everyday Confidence · Beginner</Text>
-        </View>
-
-        {serverUnreachable && (
-          <View style={styles.warningBanner}>
-            <Ionicons name="warning" size={16} color={colors.attention} />
-            <Text style={styles.warningText}>
-              Can&apos;t reach the lesson server — run `npm run server` (and Postgres) to load the curriculum.
-              Retrying automatically…
-            </Text>
-            <Pressable onPress={() => setRetryTick((t) => t + 1)} style={styles.retryButton}>
-              <Text style={styles.retryButtonText}>Retry</Text>
-            </Pressable>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={[styles.content, { width: contentWidth }]}>
+          <View style={styles.header}>
+            <Text style={styles.wordmark}>Supernova</Text>
+            <Text style={styles.wordmarkSubtitle}>Everyday Confidence · Beginner</Text>
           </View>
-        )}
 
-        {week === undefined ? (
-          <ActivityIndicator color={colors.brandOrange} style={styles.loadingIndicator} />
-        ) : week === null ? null : (
-          <>
-            <View style={styles.weekCard}>
-              <Text style={styles.sectionLabel}>SECTION 1 · WEEK {week.week}</Text>
-              <Text style={styles.weekArc}>{week.week_arc}</Text>
-              <Text style={styles.weeklyOutcome}>{week.weekly_outcome}</Text>
+          {serverUnreachable && (
+            <View style={styles.warningBanner}>
+              <Ionicons name="warning" size={16} color={colors.attention} />
+              <Text style={styles.warningText}>
+                Can&apos;t reach the lesson server — run `npm run server` (and Postgres) to load the curriculum.
+                Retrying automatically…
+              </Text>
+              <Pressable onPress={() => setRetryTick((t) => t + 1)} style={styles.retryButton}>
+                <Text style={styles.retryButtonText}>Retry</Text>
+              </Pressable>
             </View>
+          )}
 
-            {today && <TodayCard day={today} ready={availableDays?.includes(today.day) ?? false} styles={styles} colors={colors} />}
+          {roadmap === undefined ? (
+            <ActivityIndicator color={colors.brandOrange} style={styles.loadingIndicator} />
+          ) : roadmap === null || !currentWeek ? null : (
+            <>
+              <View style={styles.weekCard}>
+                <Text style={styles.sectionLabel}>SECTION 1 · WEEK {currentWeek.week}</Text>
+                <Text style={styles.weekArc}>{currentWeek.week_arc}</Text>
+                <Text style={styles.weeklyOutcome}>{currentWeek.weekly_outcome}</Text>
+              </View>
 
-            <Text style={styles.pathHeader}>This week</Text>
-            <View style={styles.path}>
-              {daysInWeek.map((d) => (
-                <DayRow key={d.day} day={d} ready={availableDays?.includes(d.day) ?? false} styles={styles} colors={colors} />
-              ))}
-            </View>
-          </>
-        )}
+              {today && (
+                <TodayCard day={today} ready={currentWeek.availableDays.includes(today.day)} styles={styles} colors={colors} />
+              )}
+
+              <Text style={styles.pathHeader}>This week</Text>
+              <LearningPath
+                days={currentWeek.days}
+                todayDay={currentWeek.days[0].day}
+                ready={(day) => currentWeek.availableDays.includes(day)}
+                onSelectDay={goToDay}
+                width={contentWidth - Space.lg * 2}
+              />
+
+              {/* Whatever's generated beyond the current week keeps
+                  appending here, but stays locked — there's no
+                  progress/unlock system yet, so only week 1 is playable.
+                  Each section's startIndex continues the previous one's
+                  snake pattern so the path flows across weeks instead of
+                  resetting back to dead center at every boundary. */}
+              {futureWeeks.reduce<{ cursor: number; nodes: ReactNode[] }>(
+                (acc, w) => {
+                  acc.nodes.push(
+                    <View key={w.week} style={styles.lockedWeekBlock}>
+                      <View style={styles.lockedWeekHeader}>
+                        <Ionicons name="lock-closed" size={14} color={colors.textMuted} />
+                        <Text style={styles.lockedWeekLabel}>WEEK {w.week}</Text>
+                      </View>
+                      <Text style={styles.lockedWeekArc}>{w.week_arc}</Text>
+                      <LearningPath
+                        days={w.days}
+                        todayDay={-1}
+                        ready={() => false}
+                        onSelectDay={goToDay}
+                        width={contentWidth - Space.lg * 2}
+                        startIndex={acc.cursor}
+                      />
+                    </View>,
+                  );
+                  acc.cursor = nextPathIndex(w.days, acc.cursor);
+                  return acc;
+                },
+                { cursor: nextPathIndex(currentWeek.days), nodes: [] },
+              ).nodes}
+            </>
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -155,40 +181,21 @@ function TodayCard({ day, ready, styles, colors }: { day: DayData; ready: boolea
   );
 }
 
-function DayRow({ day, ready, styles, colors }: { day: DayData; ready: boolean; styles: Styles; colors: Colors }) {
-  return (
-    <Pressable
-      disabled={!ready}
-      onPress={() =>
-        router.push({ pathname: '/lesson', params: { week: String(day.week), day: String(day.day) } })
-      }
-      style={[styles.dayRow, !ready && styles.dayRowLocked]}>
-      <View style={[styles.dayCircle, ready && styles.dayCircleActive]}>
-        {ready ? (
-          <Text style={styles.dayCircleText}>{day.day}</Text>
-        ) : (
-          <Ionicons name="lock-closed" size={16} color={colors.textMuted} />
-        )}
-      </View>
-      <View style={styles.dayRowBody}>
-        <Text style={styles.dayRowTitle}>Day {day.day}</Text>
-        <Text style={styles.dayRowOutcome}>{day.daily_mini_outcome}</Text>
-      </View>
-      {!ready ? <Text style={styles.soonTag}>Soon</Text> : <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />}
-    </Pressable>
-  );
-}
-
 function createStyles(colors: ReturnType<typeof useTheme>['colors']) {
   return StyleSheet.create({
     safe: {
       flex: 1,
       backgroundColor: colors.background,
     },
+    scrollContent: {
+      alignItems: 'center',
+      backgroundColor: colors.surface,
+    },
     content: {
       padding: Space.lg,
       gap: Space.lg,
       paddingBottom: Space.xxl,
+      backgroundColor: colors.background,
     },
     header: {
       paddingVertical: Space.md,
@@ -309,54 +316,27 @@ function createStyles(colors: ReturnType<typeof useTheme>['colors']) {
       letterSpacing: 1,
       marginTop: Space.sm,
     },
-    path: {
-      gap: Space.sm,
+    lockedWeekBlock: {
+      opacity: 0.6,
+      marginTop: Space.lg,
+      gap: Space.xs,
     },
-    dayRow: {
+    lockedWeekHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: Space.md,
-      backgroundColor: colors.card,
-      borderRadius: Radii.md,
-      padding: Space.md,
-      borderWidth: 1,
-      borderColor: colors.cardBorder,
+      gap: 6,
     },
-    dayRowLocked: {
-      opacity: 0.55,
-    },
-    dayCircle: {
-      width: 40,
-      height: 40,
-      borderRadius: Radii.pill,
-      backgroundColor: colors.semanticTrack,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    dayCircleActive: {
-      backgroundColor: colors.brandOrange,
-    },
-    dayCircleText: {
-      color: '#FFFFFF',
-      fontWeight: '800',
-    },
-    dayRowBody: {
-      flex: 1,
-    },
-    dayRowTitle: {
-      color: colors.graphite,
-      fontWeight: '700',
-      fontSize: 14,
-    },
-    dayRowOutcome: {
-      color: colors.muted,
-      fontSize: 13,
-      marginTop: 2,
-    },
-    soonTag: {
+    lockedWeekLabel: {
       color: colors.textMuted,
-      fontSize: 11,
+      fontWeight: '800',
+      fontSize: 12,
+      letterSpacing: 1,
+    },
+    lockedWeekArc: {
+      color: colors.muted,
       fontWeight: '700',
+      fontSize: 15,
+      marginBottom: Space.xs,
     },
   });
 }
