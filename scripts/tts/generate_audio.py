@@ -21,6 +21,7 @@ Usage:
 """
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -53,6 +54,34 @@ def fnv1a(lang: str, text: str) -> str:
         h ^= byte
         h = (h * 0x01000193) & 0xFFFFFFFF
     return format(h, "08x")
+
+
+# Hindi sentences in this content deliberately code-switch in English loan
+# words mid-sentence ("...खुद को English में कैसे introduce करें...") — real,
+# intentional Hinglish, not a mistake to rewrite away. But Indic Parler-TTS
+# is trained overwhelmingly on Devanagari-script Hindi, so how well it
+# pronounces an inline Latin-script word depends entirely on how often
+# *that specific word* showed up as a code-switch in its training data —
+# "English" is an extremely common Hindi loanword and comes out fine;
+# rarer ones like "introduce" come out mispronounced.
+#
+# Fix: substitute a Devanagari phonetic spelling *only* in the text handed
+# to the model — never in the hash (still computed from the original,
+# displayed text below) or anywhere the app shows text to the learner.
+# Add more entries here as new mispronunciations turn up; regenerate just
+# the affected clips by deleting their .mp3 (see docs/TTS_AUDIO.md) rather
+# than the whole set.
+PRONUNCIATION_OVERRIDES_HI = {
+    "introduce": "इंट्रोड्यूस",
+}
+
+
+def spoken_text_for(lang: str, text: str) -> str:
+    if lang != "hi":
+        return text
+    for word, phonetic in PRONUNCIATION_OVERRIDES_HI.items():
+        text = re.sub(rf"\b{re.escape(word)}\b", phonetic, text)
+    return text
 
 
 def load_hf_token():
@@ -106,7 +135,7 @@ def main():
             skipped += 1
             continue
 
-        prompt_ids = tokenizer(text, return_tensors="pt").input_ids
+        prompt_ids = tokenizer(spoken_text_for(lang, text), return_tensors="pt").input_ids
         with torch.no_grad():
             generation = model.generate(input_ids=description_ids_by_lang[lang], prompt_input_ids=prompt_ids)
         audio = generation.cpu().numpy().squeeze()
