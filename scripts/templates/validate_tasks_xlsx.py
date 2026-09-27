@@ -10,10 +10,17 @@ time rather than trusting whatever the sheet's reference columns say.
 
 Usage:
     python3 scripts/templates/validate_tasks_xlsx.py path/to/filled.xlsx
+    python3 scripts/templates/validate_tasks_xlsx.py path/to/filled.xlsx --json-out rows.json
 
 Exits non-zero if any FAIL-level issue is found. WARN-level issues (mostly
 content repetition, which is a judgment call, not a hard rule) are printed
 but don't fail the run.
+
+`--json-out` additionally writes every authored row (task_type set) as JSON
+— the one place the Tasks sheet actually gets parsed, so
+scripts/db/import-tasks-xlsx.ts reads rows this same script already
+validated instead of re-implementing sheet parsing in a second language.
+Only written when there are zero FAILUREs (see main()).
 """
 import json
 import os
@@ -28,7 +35,14 @@ REQUIRED_COLS = {
     "intro": ["text_hi", "text_en"],
     "rule": ["pattern", "example", "text_hi"],
     "mcq": ["prompt_hi", "prompt_en", "explanation_hi", "explanation_en"],
-    "build": ["prompt_hi", "answer"],
+    # pattern/example are required here even though the Instructions sheet
+    # calls them an optional "hint" for build rows — BuildStep.hint is
+    # non-optional in lesson-types.ts (a real missing-hint bug in the LLM
+    # pipeline was caught by the exact same requirement in validateDay.ts;
+    # see docs/CONTENT_GENERATION.md). Enforcing it here too, not just in
+    # scripts/db/import-tasks-xlsx.ts, keeps this script the single source
+    # of truth for "is this sheet safe to import."
+    "build": ["prompt_hi", "answer", "pattern", "example"],
     "speak": ["prompt_hi", "prompt_en"],
 }
 VALID_TASK_TYPES = {"intro", "rule", "mcq", "build", "speak"}
@@ -160,15 +174,17 @@ def validate(path):
             warns.append(f"(week={slot[0]}, day={slot[1]}, quest_index={slot[2]}) has {count} task rows, expected 5-8")
 
     total_blueprint_slots = sum(d["quest_count"] for d in days_by_wd.values())
-    return fails, warns, rows_per_slot, unauthored_slots, total_blueprint_slots
+    authored_rows = [row for _, row in rows if row.get("task_type")]
+    return fails, warns, rows_per_slot, unauthored_slots, total_blueprint_slots, authored_rows
 
 
 def main():
-    if len(sys.argv) != 2:
+    if len(sys.argv) not in (2, 4) or (len(sys.argv) == 4 and sys.argv[2] != "--json-out"):
         print(__doc__)
         sys.exit(1)
     path = sys.argv[1]
-    fails, warns, rows_per_slot, unauthored_slots, total_blueprint_slots = validate(path)
+    json_out = sys.argv[3] if len(sys.argv) == 4 else None
+    fails, warns, rows_per_slot, unauthored_slots, total_blueprint_slots, authored_rows = validate(path)
 
     print(f"Checked {sum(rows_per_slot.values())} task rows across {len(rows_per_slot)} authored quest slots "
           f"({len(unauthored_slots)} of {total_blueprint_slots} real quest slots still unauthored — that's expected, not a failure).\n")
@@ -190,6 +206,10 @@ def main():
         sys.exit(1)
     else:
         print("No failures. Safe to hand off for import (warnings above are still worth a human read).")
+        if json_out:
+            with open(json_out, "w") as f:
+                json.dump(authored_rows, f)
+            print(f"Wrote {len(authored_rows)} authored rows to {json_out}")
 
 
 if __name__ == "__main__":

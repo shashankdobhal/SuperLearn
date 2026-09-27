@@ -108,16 +108,29 @@ phrasing). That's still a human (or model) read, same as before.
 
 ## Turning a filled sheet into the database
 
-Not built yet — no filled, *validated* sheet exists yet to build/test it
-against. When one exists (and passes `validate_tasks_xlsx.py` with zero
-failures), the importer is a new script (e.g.
-`scripts/db/import-tasks-xlsx.ts`) that reads the **Tasks** sheet, groups
-rows by `(persona, level, week, day, quest_index)` preserving row order for
-`task_index`, and inserts directly into `content_items` +
-`content_translations` — parallel to, but independent of,
-`scripts/db/migrate-lessons.ts` (which stays the path for lessons authored
-as `src/content/lessons/**/*.ts`, e.g. Week 1). Both end at the same two
-tables.
+```bash
+npx tsx scripts/db/import-tasks-xlsx.ts path/to/filled.xlsx
+```
+
+Always re-runs `validate_tasks_xlsx.py` first (via `--json-out`, so parsing
+the sheet happens in exactly one place) and refuses to write anything if it
+reports even one FAIL — the cell locking in the `.xlsx` itself is only a
+soft deterrent (see "Why v1 needed a v2" above), so this script, not the
+spreadsheet UI, is the actual gate. Groups rows by `(week, day,
+quest_index)` preserving row order for `task_index`, and upserts into
+`content_items` + `content_translations` via the same insert path as
+`scripts/db/migrate-lessons.ts` (`scripts/db/lib/insertRows.ts`) — parallel
+to, but independent of, the `.ts`-authored path (which stays how Week 1 and
+the LLM-generated weeks are written). Both end at the same two tables, and
+both are idempotent (safe to re-run, re-import, or mix).
+
+Verified against Week 1's real content (already filled into the template as
+the worked example): imports byte-for-byte the same `answer`/`hint`/option
+data already shipped from `src/content/lessons/**`, and the app serves it
+identically afterwards.
+
+This is a genuinely independent way to add courses — no LLM, no Claude Code
+session, just a filled spreadsheet and two commands.
 
 ## Regenerating the template
 
