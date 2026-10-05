@@ -35,6 +35,11 @@ export const week01Day03: DayLesson = {
       quest: 1,
       pattern: 'I like + [verb-ing].',
       example: 'I like playing football.',
+      breakdown: [
+        { text: 'I like', labelHi: 'मुझे पसंद है', labelEn: 'I like' },
+        { text: 'playing', labelHi: 'खेलना (verb + ing)', labelEn: 'doing word + ing' },
+        { text: 'football.', labelHi: 'कौन-सा खेल/काम', labelEn: 'the activity' },
+      ],
       textHi: 'कोई activity पसंद है, यह बताने के लिए यह pattern use करें।',
       textEn: 'Use this pattern to say you like doing an activity.',
     },
@@ -44,6 +49,11 @@ export const week01Day03: DayLesson = {
       quest: 1,
       pattern: "I'm interested in + [noun / verb-ing].",
       example: "I'm interested in music.",
+      breakdown: [
+        { text: "I'm interested", labelHi: 'मुझे दिलचस्पी है', labelEn: "I'm interested" },
+        { text: 'in', labelHi: 'में', labelEn: 'in' },
+        { text: 'music.', labelHi: 'आपकी पसंद', labelEn: 'your interest' },
+      ],
       textHi: 'अपनी रुचि बताने का एक और तरीका।',
       textEn: 'Another way to say what interests you.',
     },

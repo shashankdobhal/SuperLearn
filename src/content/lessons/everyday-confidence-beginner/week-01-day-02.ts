@@ -32,6 +32,11 @@ export const week01Day02: DayLesson = {
       quest: 1,
       pattern: 'I live in + [Place].',
       example: 'I live in Pune.',
+      breakdown: [
+        { text: 'I live', labelHi: 'मैं रहता/रहती हूँ', labelEn: 'I live' },
+        { text: 'in', labelHi: 'में', labelEn: 'in (a place)' },
+        { text: 'Pune.', labelHi: 'आपकी जगह', labelEn: 'your place' },
+      ],
       textHi: 'आप कहाँ रहते हैं यह बताने के लिए यह pattern use करें।',
     },
     {
@@ -40,6 +45,10 @@ export const week01Day02: DayLesson = {
       quest: 1,
       pattern: 'I work as a / I study + [subject].',
       example: 'I study Computer Science.',
+      breakdown: [
+        { text: 'I study', labelHi: 'मैं पढ़ता/पढ़ती हूँ', labelEn: 'I study' },
+        { text: 'Computer Science.', labelHi: 'आपका विषय', labelEn: 'your subject' },
+      ],
       textHi: 'आप क्या करते हैं — काम या पढ़ाई — यह बताने के लिए।',
     },
     {

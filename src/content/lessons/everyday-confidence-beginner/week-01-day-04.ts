@@ -35,6 +35,11 @@ export const week01Day04: DayLesson = {
       quest: 1,
       pattern: 'What is your + [noun]?',
       example: 'What is your name?',
+      breakdown: [
+        { text: 'What', labelHi: 'क्या', labelEn: 'what' },
+        { text: 'is your', labelHi: 'है आपका', labelEn: 'is your' },
+        { text: 'name?', labelHi: 'जो जानना है', labelEn: 'the thing you ask about' },
+      ],
       textHi: 'नाम या जानकारी पूछने के लिए यह pattern use करें।',
     },
     {
@@ -43,6 +48,11 @@ export const week01Day04: DayLesson = {
       quest: 1,
       pattern: 'Where are you from?',
       example: 'Where are you from?',
+      breakdown: [
+        { text: 'Where', labelHi: 'कहाँ', labelEn: 'where' },
+        { text: 'are you', labelHi: 'आप हैं', labelEn: 'are you' },
+        { text: 'from?', labelHi: 'से', labelEn: 'from' },
+      ],
       textHi: 'कोई कहाँ से है, यह पूछने के लिए।',
     },
     {
