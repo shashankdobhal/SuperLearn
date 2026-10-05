@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { SupportLanguage } from '@/components/supernova/LanguageToggle';
 import { PlayAudioButton } from '@/components/supernova/PlayAudioButton';
+import { SentenceExplainer } from '@/components/supernova/lesson/SentenceExplainer';
 import { PrimaryButton } from '@/components/supernova/PrimaryButton';
 import { Radii, Space } from '@/constants/theme';
 import { useTheme } from '@/lib/theme/ThemeProvider';
@@ -21,6 +22,7 @@ export function RuleCard({
   const styles = useMemo(() => createStyles(colors), [colors]);
   // Most existing content predates textEn — fall back to Hindi rather than
   // show a blank caption when a step hasn't been authored with one yet.
+  const [explaining, setExplaining] = useState(false);
   const caption = language === 'en' && step.textEn ? step.textEn : step.textHi;
   return (
     <View style={styles.card}>
@@ -30,7 +32,15 @@ export function RuleCard({
       </View>
       <Text style={styles.example}>{step.example}</Text>
       <PlayAudioButton text={step.example} autoPlay />
-      <PrimaryButton label="NEXT!" onPress={onNext} style={styles.button} />
+      {step.breakdown && explaining ? (
+        <SentenceExplainer parts={step.breakdown} language={language} onDone={onNext} />
+      ) : (
+        <PrimaryButton
+          label={step.breakdown ? 'EXPLAIN IT' : 'NEXT!'}
+          onPress={step.breakdown ? () => setExplaining(true) : onNext}
+          style={styles.button}
+        />
+      )}
     </View>
   );
 }

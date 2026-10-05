@@ -67,6 +67,7 @@ export async function getDayLesson(week: number, day: number) {
           quest: item.quest_index,
           pattern: p.pattern,
           example: p.example,
+          breakdown: p.breakdown ?? undefined,
           textHi: hi?.text ?? '',
           textEn: en?.text ?? undefined,
         };

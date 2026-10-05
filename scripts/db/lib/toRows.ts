@@ -123,7 +123,7 @@ function splitRule(step: RuleStep) {
   if (step.textEn) fields.en = { text: step.textEn };
   return {
     // pattern/example are the English grammar being taught — invariant.
-    payload: { pattern: step.pattern, example: step.example },
+    payload: { pattern: step.pattern, example: step.example, breakdown: step.breakdown ?? null },
     fields,
   };
 }

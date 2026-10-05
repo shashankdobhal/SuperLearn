@@ -25,6 +25,15 @@ export interface IntroStep {
   audioTextEn?: string;
 }
 
+/** One chunk of an example sentence, with a short plain-language label shown
+ * under it while it's highlighted (see SentenceExplainer). `text` values
+ * joined with single spaces must equal the step's `example`. */
+export interface SentencePart {
+  text: string;
+  labelHi: string;
+  labelEn: string;
+}
+
 export interface RuleStep {
   type: 'rule';
   id: string;
@@ -36,6 +45,9 @@ export interface RuleStep {
    * — optional since most existing content predates this field; RuleCard
    * falls back to textHi when absent. */
   textEn?: string;
+  /** Optional chunk-by-chunk walkthrough of `example`. When absent,
+   * RuleCard shows just the pattern + example as before. */
+  breakdown?: SentencePart[];
 }
 
 export interface McqOption {

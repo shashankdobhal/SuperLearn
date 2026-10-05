@@ -30,6 +30,11 @@ export const week01Day01: DayLesson = {
       quest: 1,
       pattern: 'My name is + [Name].',
       example: 'My name is Rohan.',
+      breakdown: [
+        { text: 'My name', labelHi: 'मेरा नाम', labelEn: 'my name' },
+        { text: 'is', labelHi: 'है', labelEn: 'is' },
+        { text: 'Rohan.', labelHi: 'आपका नाम यहाँ', labelEn: 'your name goes here' },
+      ],
       textHi: 'खुद को introduce करने का सबसे आसान तरीका।',
     },
     {
@@ -38,6 +43,11 @@ export const week01Day01: DayLesson = {
       quest: 1,
       pattern: 'I am from + [Place].',
       example: 'I am from Mumbai.',
+      breakdown: [
+        { text: 'I am', labelHi: 'मैं हूँ', labelEn: 'I am' },
+        { text: 'from', labelHi: 'से (कहाँ से)', labelEn: 'where you come from' },
+        { text: 'Mumbai.', labelHi: 'आपकी जगह', labelEn: 'your place' },
+      ],
       textHi: 'अपनी जगह बताने के लिए यह pattern use करें।',
     },
     {
