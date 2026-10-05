@@ -10,11 +10,13 @@
  */
 const ALLOWED_KEYS: Record<string, string[]> = {
   intro: ['type', 'id', 'quest', 'emoji', 'textHi', 'textEn', 'audioTextEn'],
-  rule: ['type', 'id', 'quest', 'pattern', 'example', 'textHi'],
+  rule: ['type', 'id', 'quest', 'pattern', 'example', 'textHi', 'textEn', 'breakdown'],
   mcq: ['type', 'id', 'quest', 'isPopQuiz', 'promptHi', 'promptEn', 'options', 'hint', 'explanationHi', 'explanationEn', 'audioTextEn'],
   build: ['type', 'id', 'quest', 'promptHi', 'answer', 'distractors', 'hint', 'audioTextEn'],
   speak: ['id', 'quest', 'promptEn', 'promptHi', 'hint', 'isFinal', 'missionLabel'],
 };
+
+const BREAKDOWN_PART_KEYS = ['text', 'labelHi', 'labelEn'];
 
 function pick(obj: Record<string, unknown>, keys: string[]): Record<string, unknown> {
   const out: Record<string, unknown> = {};
@@ -28,7 +30,14 @@ export function sanitizeLesson(raw: Record<string, unknown>): Record<string, unk
 
   const sanitizedLearnFlow = learnFlow.map((step: Record<string, unknown>) => {
     const allowed = ALLOWED_KEYS[step.type as string];
-    return allowed ? pick(step, allowed) : step;
+    if (!allowed) return step;
+    const picked = pick(step, allowed);
+    if (Array.isArray(picked.breakdown)) {
+      picked.breakdown = picked.breakdown.map((part: Record<string, unknown>) =>
+        part && typeof part === 'object' ? pick(part, BREAKDOWN_PART_KEYS) : part,
+      );
+    }
+    return picked;
   });
   const sanitizedSpeakFlow = speakFlow.map((step: Record<string, unknown>) => pick(step, ALLOWED_KEYS.speak));
 

@@ -199,6 +199,16 @@ that authored Weeks 1-4:
    `SpeakStep` has no `type` field at all. `sanitizeLesson.ts` strips any
    key not in the real shape before validation/writing.
 
+## Sentence breakdowns on rule steps
+
+Every generated `rule` step must carry a `breakdown` (2-6 chunks of
+`{text, labelHi, labelEn}`) that drives the app's `SentenceExplainer`
+walkthrough. `promptBuilder.ts` rule #14 asks for it, `sanitizeLesson.ts`
+strips stray keys from each chunk, and `validateDay.ts` fails the day (and
+retries) if it's missing or if the chunks joined with spaces don't equal
+`example` exactly. Weeks 1-7 predate this: only Week 1 Day 1 has
+breakdowns so far, and the validator isn't re-run on existing files.
+
 ## What's not done yet
 
 - Weeks 8-50 (roughly 300 days) still need generating — bounded by the

@@ -32,6 +32,30 @@ export function validateDay(lesson: DayLesson, bp: BlueprintDay, earliestWeek: M
   }
 
   const byQuest = new Map<number, { learn: number; speak: number }>();
+  // The sentence-explainer chunks (SentenceExplainer.tsx) must rebuild the
+  // example exactly — otherwise the highlighted words wouldn't match what's
+  // being spoken. Required on every rule step so no generated day silently
+  // ships without the walkthrough.
+  function checkBreakdown(breakdown: unknown, example: unknown, label: string) {
+    if (!Array.isArray(breakdown) || breakdown.length === 0) {
+      fails.push(`${label}.breakdown: missing/empty (required — chunk-by-chunk walkthrough of "example")`);
+      return;
+    }
+    if (breakdown.length < 2 || breakdown.length > 6) {
+      fails.push(`${label}.breakdown: ${breakdown.length} parts, need 2-6`);
+    }
+    breakdown.forEach((part, i) => {
+      const p = (part ?? {}) as Record<string, unknown>;
+      requireString(p.text, `${label}.breakdown[${i}].text`);
+      requireString(p.labelHi, `${label}.breakdown[${i}].labelHi`);
+      requireString(p.labelEn, `${label}.breakdown[${i}].labelEn`);
+    });
+    const joined = breakdown.map((part) => String((part as Record<string, unknown>)?.text ?? '').trim()).join(' ');
+    if (typeof example === 'string' && joined !== example.trim()) {
+      fails.push(`${label}.breakdown: parts joined ("${joined}") must equal example ("${example}") exactly`);
+    }
+  }
+
   for (const step of lesson.learnFlow ?? []) {
     const e = byQuest.get(step.quest) ?? { learn: 0, speak: 0 };
     e.learn++;
@@ -91,6 +115,7 @@ export function validateDay(lesson: DayLesson, bp: BlueprintDay, earliestWeek: M
       requireString(step.pattern, `rule ${step.id}.pattern`);
       requireString(step.example, `rule ${step.id}.example`);
       requireString(step.textHi, `rule ${step.id}.textHi`);
+      checkBreakdown(step.breakdown, step.example, `rule ${step.id}`);
     }
     if (step.type === 'mcq') {
       requireString(step.promptHi, `mcq ${step.id}.promptHi`);
